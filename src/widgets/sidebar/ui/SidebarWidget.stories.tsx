@@ -1,3 +1,4 @@
+import React from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
 import { SidebarWidget } from './SidebarWidget'
 import type { RecentFile } from '@/entities/session'

@@ -8,7 +8,6 @@
   "externals": [
     "public/**"
   ],
-  "diagnostics": true,
   "debug": false,
   "autoAcceptChanges": "main",
   "zip": true
