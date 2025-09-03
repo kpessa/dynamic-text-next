@@ -1,0 +1,70 @@
+name: Chromatic
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  chromatic:
+    name: Run Chromatic
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required to retrieve git history
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Storybook
+        run: pnpm build-storybook
+
+      - name: Run Chromatic
+        uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          storybookBuildDir: storybook-static
+          onlyChanged: true # Only run on changed components
+          exitZeroOnChanges: true # Don't fail the build on visual changes
+          autoAcceptChanges: main # Auto-accept changes on main branch
+          
+      - name: Comment PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { CHROMATIC_BUILD_URL, CHROMATIC_CHANGES_COUNT } = process.env;
+            if (CHROMATIC_BUILD_URL) {
+              const comment = `
+              ### 🎨 Visual Testing Results
+              
+              ${CHROMATIC_CHANGES_COUNT > 0 
+                ? `⚠️ Found ${CHROMATIC_CHANGES_COUNT} visual changes` 
+                : '✅ No visual changes detected'}
+              
+              [View Chromatic Build](${CHROMATIC_BUILD_URL})
+              `;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }

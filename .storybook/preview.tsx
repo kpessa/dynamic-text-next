@@ -20,6 +20,13 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
+    // Chromatic configuration
+    chromatic: {
+      pauseAnimationAtEnd: true, // Disable animations for consistent snapshots
+      delay: 200, // Wait for async content to load
+      diffThreshold: 0.1, // Sensitivity for detecting changes
+      viewports: [375, 768, 1440], // Test on mobile, tablet, desktop
+    },
     options: {
       storySort: {
         order: ['Introduction', 'Atoms', 'Molecules', 'Widgets', 'Pages'],

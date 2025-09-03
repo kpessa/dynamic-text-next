@@ -1,0 +1,15 @@
+{
+  "projectId": "your-project-id",
+  "buildScriptName": "build-storybook",
+  "onlyChanged": true,
+  "exitZeroOnChanges": true,
+  "exitOnceUploaded": false,
+  "skip": "dependabot/**",
+  "externals": [
+    "public/**"
+  ],
+  "diagnostics": true,
+  "debug": false,
+  "autoAcceptChanges": "main",
+  "zip": true
+}
