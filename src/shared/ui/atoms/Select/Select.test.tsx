@@ -19,8 +19,15 @@ describe('Select', () => {
       expect(label?.textContent).toContain('Choose One')
     })
 
-    it('should display placeholder when no value selected', () => {
-      render(<Select label="Choose" options={mockOptions} placeholder="Select an option..." />)
+    it('should display label when no value selected with both label and placeholder', () => {
+      const { container } = render(<Select label="Choose" options={mockOptions} placeholder="Select an option..." />)
+      // When both label and placeholder exist, only label is shown to avoid overlap
+      const label = container.querySelector('.MuiFormLabel-root')
+      expect(label?.textContent).toContain('Choose')
+    })
+
+    it('should display placeholder when no label provided', () => {
+      render(<Select options={mockOptions} placeholder="Select an option..." />)
       expect(screen.getByText('Select an option...')).toBeInTheDocument()
     })
 
@@ -54,8 +61,8 @@ describe('Select', () => {
       expect(screen.getByText('Option 1, Option 2')).toBeInTheDocument()
     })
 
-    it('should display placeholder for empty multi-select', () => {
-      render(
+    it('should display label for empty multi-select with both label and placeholder', () => {
+      const { container } = render(
         <Select 
           label="Choose Multiple" 
           options={mockOptions} 
@@ -64,7 +71,9 @@ describe('Select', () => {
           value={[]}
         />
       )
-      expect(screen.getByText('Select multiple...')).toBeInTheDocument()
+      // When both label and placeholder exist, only label is shown to avoid overlap
+      const label = container.querySelector('.MuiFormLabel-root')
+      expect(label?.textContent).toContain('Choose Multiple')
     })
   })
 
@@ -93,8 +102,10 @@ describe('Select', () => {
 
   describe('Edge Cases', () => {
     it('should handle empty options array', () => {
-      render(<Select label="Empty" options={[]} placeholder="No options..." />)
-      expect(screen.getByText('No options...')).toBeInTheDocument()
+      const { container } = render(<Select label="Empty" options={[]} placeholder="No options..." />)
+      // With both label and placeholder, only label shows
+      const label = container.querySelector('.MuiFormLabel-root')
+      expect(label?.textContent).toContain('Empty')
     })
 
     it('should handle options with icons', () => {

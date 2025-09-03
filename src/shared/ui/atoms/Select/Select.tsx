@@ -73,7 +73,15 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
 
     const renderValue = (selected: any) => {
       if (!selected || (Array.isArray(selected) && selected.length === 0)) {
-        return <span style={{ color: 'rgba(0, 0, 0, 0.38)' }}>{placeholder || 'Select...'}</span>
+        if (placeholder && !label) {
+          return <span style={{ color: 'rgba(0, 0, 0, 0.38)' }}>{placeholder}</span>
+        }
+        if (placeholder && label) {
+          // When we have both label and placeholder, return empty string
+          // The label will be shown in the notched outline
+          return ''
+        }
+        return <span style={{ color: 'rgba(0, 0, 0, 0.38)' }}>Select...</span>
       }
 
       if (isMulti && Array.isArray(selected)) {
@@ -178,13 +186,14 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
         size={size}
         color={getColor()}
       >
-        {label && <InputLabel>{label}</InputLabel>}
+        {label && <InputLabel id={`${label}-label`}>{label}</InputLabel>}
         <MuiSelect
           {...props}
+          labelId={label ? `${label}-label` : undefined}
           value={value || (isMulti ? [] : '')}
           multiple={isMulti}
-          label={label}
-          displayEmpty={!!placeholder}
+          label={label ? label : undefined}
+          displayEmpty={!!placeholder || !label}
           renderValue={renderValue}
           MenuProps={{
             PaperProps: {
