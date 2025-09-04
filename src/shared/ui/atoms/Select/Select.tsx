@@ -73,15 +73,12 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
 
     const renderValue = (selected: any) => {
       if (!selected || (Array.isArray(selected) && selected.length === 0)) {
+        // When there's only a placeholder (no label), show it
         if (placeholder && !label) {
           return <span style={{ color: 'rgba(0, 0, 0, 0.38)' }}>{placeholder}</span>
         }
-        if (placeholder && label) {
-          // When we have both label and placeholder, return empty string
-          // The label will be shown in the notched outline
-          return ''
-        }
-        return <span style={{ color: 'rgba(0, 0, 0, 0.38)' }}>Select...</span>
+        // When there's a label, return empty to let the label handle the display
+        return ''
       }
 
       if (isMulti && Array.isArray(selected)) {
@@ -192,8 +189,8 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(
           labelId={label ? `${label}-label` : undefined}
           value={value || (isMulti ? [] : '')}
           multiple={isMulti}
-          label={label ? label : undefined}
-          displayEmpty={!!placeholder || !label}
+          label={label}
+          displayEmpty={!label && !!placeholder}
           renderValue={renderValue}
           MenuProps={{
             PaperProps: {
