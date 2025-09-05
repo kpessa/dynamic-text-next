@@ -4,7 +4,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Provider } from 'react-redux';
 import { store } from '../src/app/store';
-import theme from '../src/app/theme';
+import { lightTheme, darkTheme } from '../src/app/themes';
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
@@ -29,14 +29,17 @@ const preview: Preview = {
     },
     options: {
       storySort: {
-        order: ['Introduction', 'Atoms', 'Molecules', 'Widgets', 'Pages'],
+        order: ['Introduction', 'Atoms', 'Molecules', 'Widgets', 'Pages', 'Organisms'],
       },
     },
     backgrounds: {
-      default: 'light',
+      default: 'default',
       values: [
+        { name: 'default', value: 'transparent' },
         { name: 'light', value: '#fafafa' },
-        { name: 'dark', value: '#0a0a0a' },
+        { name: 'dark', value: '#121212' },
+        { name: 'white', value: '#ffffff' },
+        { name: 'black', value: '#000000' },
       ],
     },
     viewport: {
@@ -58,13 +61,22 @@ const preview: Preview = {
   },
   decorators: [
     (Story, context) => {
-      const isDark = context.globals.theme === 'dark';
+      const themeMode = context.globals.theme || 'light';
+      const theme = themeMode === 'dark' ? darkTheme : lightTheme;
       
       return (
         <Provider store={store}>
           <ThemeProvider theme={theme}>
             <CssBaseline />
-            <div className={isDark ? 'dark' : 'light'} style={{ padding: '20px' }}>
+            <div 
+              style={{ 
+                padding: '20px',
+                minHeight: '100vh',
+                backgroundColor: theme.palette.background.default,
+                color: theme.palette.text.primary,
+                transition: 'background-color 0.3s ease, color 0.3s ease',
+              }}
+            >
               <Story />
             </div>
           </ThemeProvider>
@@ -75,15 +87,16 @@ const preview: Preview = {
   globalTypes: {
     theme: {
       name: 'Theme',
-      description: 'Material UI theme',
+      description: 'Switch between light and dark theme',
       defaultValue: 'light',
       toolbar: {
-        icon: 'circlehollow',
+        icon: 'paintbrush',
         items: [
-          { value: 'light', title: 'Light' },
-          { value: 'dark', title: 'Dark' },
+          { value: 'light', title: '☀️ Light', left: '☀️' },
+          { value: 'dark', title: '🌙 Dark', left: '🌙' },
         ],
         showName: true,
+        dynamicTitle: true,
       },
     },
   },
