@@ -10,6 +10,7 @@ export const Chip = React.forwardRef<HTMLDivElement, ChipProps>(
       size = 'medium',
       clickable = false,
       deletable = false,
+      disabled = false,
       onDelete,
       avatar,
       icon,
@@ -33,8 +34,9 @@ export const Chip = React.forwardRef<HTMLDivElement, ChipProps>(
         color={color}
         size={size}
         label={label}
-        clickable={isClickable}
-        onClick={isClickable ? onClick : undefined}
+        disabled={disabled}
+        clickable={isClickable && !disabled}
+        onClick={isClickable && !disabled ? onClick : undefined}
         onDelete={handleDelete}
         avatar={avatar as any}
         icon={icon as any}

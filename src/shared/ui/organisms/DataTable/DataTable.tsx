@@ -43,6 +43,7 @@ import {
   Stack,
   SxProps,
   Theme,
+  Button,
 } from '@mui/material'
 import {
   Download as DownloadIcon,
@@ -182,7 +183,7 @@ export function DataTable<TData extends Record<string, unknown>>({
   onColumnFiltersChange: onColumnFiltersChangeProp,
   onGlobalFilterChange: onGlobalFilterChangeProp,
   onColumnVisibilityChange: onColumnVisibilityChangeProp,
-  onRowSelectionChange: onRowSelectionChangeProp,
+  onSelectionChange: onSelectionChangeProp,
   onPaginationChange: onPaginationChangeProp,
   
   title,
@@ -194,9 +195,11 @@ export function DataTable<TData extends Record<string, unknown>>({
   showExport = true,
   exportFileName = 'data-export',
   onExport,
+  onRowClick,
   
   emptyMessage = 'No data available',
   
+  actions,
   customToolbar,
   customActions,
   
@@ -281,7 +284,7 @@ export function DataTable<TData extends Record<string, unknown>>({
     onRowSelectionChange: (updater) => {
       const newSelection = typeof updater === 'function' ? updater(rowSelection) : updater
       setRowSelection(newSelection)
-      onRowSelectionChangeProp?.(newSelection)
+      onSelectionChangeProp?.(newSelection)
     },
     onPaginationChange: (updater) => {
       const newPagination = typeof updater === 'function' ? updater(pagination) : updater
@@ -464,6 +467,21 @@ export function DataTable<TData extends Record<string, unknown>>({
                   </Tooltip>
                 )}
                 
+                {/* Actions */}
+                {actions?.map((action, index) => (
+                  <Button
+                    key={index}
+                    size="small"
+                    onClick={action.onClick}
+                    disabled={action.disabled}
+                    color={action.color}
+                    startIcon={action.startIcon}
+                    sx={{ ml: 1 }}
+                  >
+                    {action.label}
+                  </Button>
+                ))}
+                
                 {customActions}
               </Stack>
             </>
@@ -588,6 +606,8 @@ export function DataTable<TData extends Record<string, unknown>>({
                 key={row.id}
                 hover
                 selected={row.getIsSelected()}
+                onClick={() => onRowClick?.(row.original)}
+                style={{ cursor: onRowClick ? 'pointer' : 'default' }}
               >
                 {row.getVisibleCells().map(cell => (
                   <TableCell

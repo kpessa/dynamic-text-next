@@ -6,7 +6,9 @@ import {
   Avatar,
   IconButton,
   Chip,
-  Button
+  Button,
+  Box,
+  Typography
 } from '@mui/material'
 import {
   Star as StarIcon,
@@ -18,7 +20,9 @@ import {
   Phone as PhoneIcon,
   Folder as FolderIcon,
   InsertDriveFile as FileIcon,
-  Info as InfoIcon
+  Info as InfoIcon,
+  Add as AddIcon,
+  InboxOutlined as InboxIcon
 } from '@mui/icons-material'
 import { fn } from '@storybook/test'
 
@@ -29,11 +33,46 @@ const meta: Meta<typeof List> = {
     layout: 'padded',
     docs: {
       description: {
-        component: 'A versatile list component with virtual scrolling, selection, nesting, and more.'
+        component: 'A versatile list component with selection, nesting, search, sorting, and more. Use variant="simple" for basic lists, "interactive" for lists with search/sort/drag, and "nested" for hierarchical data.'
       }
     }
   },
   tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['simple', 'interactive', 'nested'],
+      description: 'List variant - simple for basic, interactive for advanced features, nested for hierarchy'
+    },
+    selectable: {
+      control: 'boolean',
+      description: 'Enable item selection'
+    },
+    multiSelect: {
+      control: 'boolean',
+      description: 'Allow multiple selection (requires selectable)'
+    },
+    searchable: {
+      control: 'boolean',
+      description: 'Show search bar (only for interactive variant)'
+    },
+    sortable: {
+      control: 'boolean',
+      description: 'Enable sorting (only for interactive variant)'
+    },
+    draggable: {
+      control: 'boolean',
+      description: 'Enable drag and drop reordering (only for interactive variant)'
+    },
+    dense: {
+      control: 'boolean',
+      description: 'Use dense layout'
+    },
+    divided: {
+      control: 'boolean',
+      description: 'Show dividers between all items'
+    }
+  }
 }
 
 export default meta
@@ -55,7 +94,7 @@ const contactItems: ListItemData[] = [
     secondary: 'john.doe@example.com',
     avatar: <Avatar>JD</Avatar>,
     action: (
-      <IconButton edge="end">
+      <IconButton edge="end" size="small">
         <StarBorderIcon />
       </IconButton>
     )
@@ -66,7 +105,7 @@ const contactItems: ListItemData[] = [
     secondary: 'jane.smith@example.com',
     avatar: <Avatar sx={{ bgcolor: 'secondary.main' }}>JS</Avatar>,
     action: (
-      <IconButton edge="end">
+      <IconButton edge="end" size="small">
         <StarIcon color="warning" />
       </IconButton>
     )
@@ -77,7 +116,7 @@ const contactItems: ListItemData[] = [
     secondary: 'bob.johnson@example.com',
     avatar: <Avatar sx={{ bgcolor: 'success.main' }}>BJ</Avatar>,
     action: (
-      <IconButton edge="end">
+      <IconButton edge="end" size="small">
         <StarBorderIcon />
       </IconButton>
     )
@@ -88,7 +127,7 @@ const contactItems: ListItemData[] = [
     secondary: 'alice.brown@example.com',
     avatar: <Avatar sx={{ bgcolor: 'warning.main' }}>AB</Avatar>,
     action: (
-      <IconButton edge="end">
+      <IconButton edge="end" size="small">
         <StarBorderIcon />
       </IconButton>
     )
@@ -99,7 +138,7 @@ const contactItems: ListItemData[] = [
     secondary: 'charlie.wilson@example.com',
     avatar: <Avatar sx={{ bgcolor: 'error.main' }}>CW</Avatar>,
     action: (
-      <IconButton edge="end">
+      <IconButton edge="end" size="small">
         <StarBorderIcon />
       </IconButton>
     )
@@ -107,85 +146,71 @@ const contactItems: ListItemData[] = [
 ]
 
 const fileItems: ListItemData[] = [
-  {
-    id: 1,
-    primary: 'Documents',
-    secondary: '24 files',
-    icon: <FolderIcon color="primary" />,
-    divider: true
-  },
-  {
-    id: 2,
-    primary: 'Images',
+  { 
+    id: 1, 
+    primary: 'Documents', 
     secondary: '142 files',
-    icon: <FolderIcon color="primary" />,
-    divider: true
+    icon: <FolderIcon color="primary" />
   },
-  {
-    id: 3,
-    primary: 'report.pdf',
-    secondary: '2.4 MB',
-    icon: <FileIcon />,
-    divider: true
+  { 
+    id: 2, 
+    primary: 'Images', 
+    secondary: '892 files',
+    icon: <FolderIcon color="primary" />
   },
-  {
-    id: 4,
-    primary: 'presentation.pptx',
+  { 
+    id: 3, 
+    primary: 'report.pdf', 
+    secondary: '2.3 MB',
+    icon: <FileIcon />
+  },
+  { 
+    id: 4, 
+    primary: 'presentation.pptx', 
     secondary: '5.1 MB',
-    icon: <FileIcon />,
-    divider: true
+    icon: <FileIcon />
   },
-  {
-    id: 5,
-    primary: 'data.xlsx',
+  { 
+    id: 5, 
+    primary: 'spreadsheet.xlsx', 
     secondary: '1.2 MB',
     icon: <FileIcon />
   },
 ]
 
-// Generate large dataset
-const generateLargeDataset = (count: number): ListItemData[] => {
-  return Array.from({ length: count }, (_, i) => ({
-    id: i + 1,
-    primary: `Item ${i + 1}`,
-    secondary: `Description for item ${i + 1}`,
-    avatar: <Avatar>{(i + 1).toString().slice(0, 2)}</Avatar>,
-    action: (
-      <IconButton edge="end" size="small">
-        <DeleteIcon />
-      </IconButton>
-    )
-  }))
-}
-
+// Export individual stories
 export const Default: Story = {
   args: {
     items: simpleItems,
   },
 }
 
-export const WithAvatars: Story = {
+export const SimpleList: Story = {
   args: {
-    items: contactItems,
+    items: simpleItems,
+    variant: 'simple',
+    onItemClick: fn(),
   },
 }
 
 export const WithIcons: Story = {
   args: {
     items: fileItems,
+    variant: 'simple',
   },
 }
 
-export const Dense: Story = {
+export const WithAvatars: Story = {
   args: {
-    items: simpleItems,
-    dense: true,
+    items: contactItems,
+    variant: 'simple',
   },
 }
 
 export const Selectable: Story = {
   args: {
-    items: contactItems,
+    items: simpleItems,
+    variant: 'simple',
     selectable: true,
     onSelectionChange: fn(),
   },
@@ -194,6 +219,7 @@ export const Selectable: Story = {
 export const MultiSelect: Story = {
   args: {
     items: contactItems,
+    variant: 'simple',
     selectable: true,
     multiSelect: true,
     selectedItems: [1, 3],
@@ -201,98 +227,50 @@ export const MultiSelect: Story = {
   },
 }
 
-export const Interactive: Story = {
+export const Dense: Story = {
+  args: {
+    items: simpleItems,
+    variant: 'simple',
+    dense: true,
+  },
+}
+
+export const Divided: Story = {
+  args: {
+    items: simpleItems,
+    variant: 'simple',
+    divided: true,
+  },
+}
+
+export const InteractiveList: Story = {
   args: {
     items: contactItems,
     variant: 'interactive',
-    onItemClick: fn(),
-    onItemDoubleClick: fn(),
+    searchable: true,
+    sortable: true,
+    selectable: true,
+    multiSelect: true,
+    onSelectionChange: fn(),
+    onSearch: fn(),
+    onSort: fn(),
   },
 }
 
-export const NestedLists: Story = {
-  args: {
-    items: [
-      {
-        id: 'inbox',
-        primary: 'Inbox',
-        secondary: '5 categories',
-        icon: <EmailIcon />
-      },
-      {
-        id: 'contacts',
-        primary: 'Contacts',
-        secondary: '3 groups',
-        icon: <PersonIcon />
-      },
-      {
-        id: 'recent',
-        primary: 'Recent',
-        secondary: '10 items',
-        icon: <PhoneIcon />
-      },
-    ],
-    variant: 'nested',
-    nestedItems: new Map([
-      ['inbox', [
-        { id: 'primary', primary: 'Primary', secondary: '12 new' },
-        { id: 'social', primary: 'Social', secondary: '8 new' },
-        { id: 'promotions', primary: 'Promotions', secondary: '23 new' },
-      ]],
-      ['contacts', [
-        { id: 'family', primary: 'Family', secondary: '5 contacts' },
-        { id: 'friends', primary: 'Friends', secondary: '12 contacts' },
-        { id: 'work', primary: 'Work', secondary: '28 contacts' },
-      ]],
-    ]),
-    defaultExpanded: ['inbox'],
-  },
-}
-
-export const VirtualizedList: Story = {
-  args: {
-    items: generateLargeDataset(50), // Reduced from 1000 to avoid performance issues
-    virtualized: false, // Virtualization temporarily disabled
-    height: 400,
-    itemHeight: 72,
-    overscan: 5,
-  },
-}
-
-export const VirtualizedWithVariableHeight: Story = {
-  args: {
-    items: generateLargeDataset(30).map((item, i) => ({ // Reduced from 100
-      ...item,
-      secondary: i % 3 === 0 
-        ? 'This is a longer description that will take up more space and cause the item to be taller'
-        : item.secondary
-    })),
-    virtualized: false, // Temporarily disabled
-    height: 400,
-    itemHeight: (index: number) => index % 3 === 0 ? 100 : 72,
-  },
-}
-
-export const Searchable: Story = {
+export const SearchableList: Story = {
   args: {
     items: contactItems,
+    variant: 'interactive',
     searchable: true,
     searchPlaceholder: 'Search contacts...',
     onSearch: fn(),
   },
 }
 
-export const SearchableWithLocalFilter: Story = {
+export const SortableList: Story = {
   args: {
-    items: generateLargeDataset(50),
-    searchable: true,
-    filterMode: 'local',
-  },
-}
-
-export const Sortable: Story = {
-  args: {
-    items: contactItems,
+    items: simpleItems,
+    variant: 'interactive',
     sortable: true,
     sortBy: 'primary',
     sortOrder: 'asc',
@@ -300,78 +278,57 @@ export const Sortable: Story = {
   },
 }
 
-export const Grouped: Story = {
-  args: {
-    items: [
-      { id: 1, primary: 'Apple', secondary: 'Fruit' },
-      { id: 2, primary: 'Banana', secondary: 'Fruit' },
-      { id: 3, primary: 'Carrot', secondary: 'Vegetable' },
-      { id: 4, primary: 'Date', secondary: 'Fruit' },
-      { id: 5, primary: 'Eggplant', secondary: 'Vegetable' },
-      { id: 6, primary: 'Fig', secondary: 'Fruit' },
-      { id: 7, primary: 'Garlic', secondary: 'Vegetable' },
-    ],
-    grouped: true,
-    groupBy: (item) => item.secondary as string,
-    groupHeaders: new Map([
-      ['Fruit', <Chip label="Fruits" color="primary" size="small" />],
-      ['Vegetable', <Chip label="Vegetables" color="success" size="small" />],
-    ]),
-  },
-}
-
-export const InfiniteScroll: Story = {
-  args: {
-    items: generateLargeDataset(20),
-    hasMore: true,
-    onLoadMore: fn(),
-  },
-}
-
-export const Draggable: Story = {
+export const DraggableList: Story = {
   args: {
     items: simpleItems,
+    variant: 'interactive',
     draggable: true,
     onReorder: fn(),
   },
 }
 
-export const WithCustomActions: Story = {
+export const NestedList: Story = {
   args: {
-    items: fileItems.map(item => ({
-      ...item,
-      action: (
-        <div>
-          <IconButton size="small" color="primary">
-            <EditIcon fontSize="small" />
-          </IconButton>
-          <IconButton size="small" color="error">
-            <DeleteIcon fontSize="small" />
-          </IconButton>
-        </div>
-      )
-    })),
+    items: [
+      { id: 'inbox', primary: 'Inbox', secondary: '12 new', icon: <EmailIcon /> },
+      { id: 'contacts', primary: 'Contacts', secondary: '5 groups', icon: <PersonIcon /> },
+      { id: 'recent', primary: 'Recent', secondary: '10 calls', icon: <PhoneIcon /> },
+    ],
+    variant: 'nested',
+    nestedItems: new Map([
+      ['inbox', [
+        { id: 'inbox-1', primary: 'Meeting notes', secondary: 'From John' },
+        { id: 'inbox-2', primary: 'Project update', secondary: 'From Sarah' },
+        { id: 'inbox-3', primary: 'Invoice', secondary: 'From Accounting' },
+      ]],
+      ['contacts', [
+        { id: 'contacts-1', primary: 'Family', secondary: '8 contacts' },
+        { id: 'contacts-2', primary: 'Work', secondary: '45 contacts' },
+        { id: 'contacts-3', primary: 'Friends', secondary: '12 contacts' },
+      ]],
+    ]),
+    defaultExpanded: ['inbox'],
+    onExpandChange: fn(),
   },
 }
 
-export const DisabledItems: Story = {
+export const GroupedList: Story = {
   args: {
-    items: simpleItems.map((item, index) => ({
-      ...item,
-      disabled: index % 2 === 1,
-    })),
-    selectable: true,
-  },
-}
-
-export const WithSubheader: Story = {
-  args: {
-    items: contactItems,
-    subheader: (
-      <div style={{ padding: '8px 16px', backgroundColor: '#f5f5f5' }}>
-        <strong>Contact List</strong> - 5 contacts
-      </div>
-    ),
+    items: [
+      { id: 1, primary: 'Apple', secondary: 'Fruit', data: { category: 'Fruits' } },
+      { id: 2, primary: 'Banana', secondary: 'Fruit', data: { category: 'Fruits' } },
+      { id: 3, primary: 'Carrot', secondary: 'Vegetable', data: { category: 'Vegetables' } },
+      { id: 4, primary: 'Broccoli', secondary: 'Vegetable', data: { category: 'Vegetables' } },
+      { id: 5, primary: 'Milk', secondary: 'Dairy', data: { category: 'Dairy' } },
+      { id: 6, primary: 'Cheese', secondary: 'Dairy', data: { category: 'Dairy' } },
+    ],
+    grouped: true,
+    groupBy: (item) => item.data?.category || 'Other',
+    groupHeaders: new Map([
+      ['Fruits', <Typography variant="subtitle2" color="primary">Fresh Fruits</Typography>],
+      ['Vegetables', <Typography variant="subtitle2" color="success.main">Vegetables</Typography>],
+      ['Dairy', <Typography variant="subtitle2" color="info.main">Dairy Products</Typography>],
+    ]),
   },
 }
 
@@ -393,10 +350,10 @@ export const EmptyState: Story = {
   args: {
     items: [],
     emptyMessage: 'No items found',
-    emptyIcon: <InfoIcon sx={{ fontSize: 48, color: 'text.secondary' }} />,
+    emptyIcon: <InboxIcon sx={{ fontSize: 48, color: 'text.disabled' }} />,
     emptyAction: (
-      <Button variant="contained" size="small">
-        Add New Item
+      <Button variant="contained" startIcon={<AddIcon />}>
+        Add Item
       </Button>
     ),
   },
@@ -405,48 +362,97 @@ export const EmptyState: Story = {
 export const CustomEmptyState: Story = {
   args: {
     items: [],
-    customEmptyState: (
-      <div style={{ padding: 32, textAlign: 'center' }}>
-        <FolderIcon sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
-        <h3>Your folder is empty</h3>
-        <p>Start by adding some files or folders</p>
-        <Button variant="outlined" startIcon={<FileIcon />}>
-          Upload Files
+    renderEmpty: (
+      <Box textAlign="center" py={4}>
+        <InboxIcon sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
+        <Typography variant="h6" gutterBottom>
+          Your inbox is empty
+        </Typography>
+        <Typography variant="body2" color="text.secondary" paragraph>
+          When you receive messages, they'll appear here
+        </Typography>
+        <Button variant="outlined" startIcon={<AddIcon />}>
+          Compose Message
         </Button>
-      </div>
+      </Box>
     ),
   },
 }
 
-export const FullFeatured: Story = {
+export const InfiniteScroll: Story = {
   args: {
-    items: generateLargeDataset(25), // Reduced to avoid performance issues
-    virtualized: false, // Temporarily disabled
-    height: 500,
+    items: Array.from({ length: 20 }, (_, i) => ({
+      id: i + 1,
+      primary: `Item ${i + 1}`,
+      secondary: `Description for item ${i + 1}`,
+    })),
+    hasMore: true,
+    loadingMore: false,
+    onLoadMore: fn(),
+  },
+}
+
+export const DisabledItems: Story = {
+  args: {
+    items: simpleItems.map((item, index) => ({
+      ...item,
+      disabled: index % 2 === 0,
+    })),
+    selectable: true,
+  },
+}
+
+export const CustomItemRenderer: Story = {
+  args: {
+    items: contactItems,
+    renderItem: (item) => (
+      <Box
+        key={item.id}
+        sx={{
+          p: 2,
+          mb: 1,
+          bgcolor: 'background.paper',
+          borderRadius: 1,
+          boxShadow: 1,
+          '&:hover': {
+            boxShadow: 2,
+          },
+        }}
+      >
+        <Box display="flex" alignItems="center" gap={2}>
+          {item.avatar}
+          <Box flex={1}>
+            <Typography variant="subtitle1">{item.primary}</Typography>
+            <Typography variant="body2" color="text.secondary">
+              {item.secondary}
+            </Typography>
+          </Box>
+          {item.action}
+        </Box>
+      </Box>
+    ),
+  },
+}
+
+export const CompleteExample: Story = {
+  args: {
+    items: contactItems,
+    variant: 'interactive',
     searchable: true,
     sortable: true,
     selectable: true,
     multiSelect: true,
     draggable: true,
-    onItemClick: fn(),
-    onSelectionChange: fn(),
-    onSort: fn(),
-    onSearch: fn(),
-    onReorder: fn(),
-  },
-}
-
-export const MobileOptimized: Story = {
-  args: {
-    items: contactItems.map(item => ({
-      ...item,
-      action: undefined, // Remove actions for cleaner mobile view
-    })),
     dense: false,
-    selectable: true,
-    sx: {
-      maxWidth: 360,
-      mx: 'auto',
-    },
+    divided: true,
+    searchPlaceholder: 'Search contacts...',
+    emptyMessage: 'No contacts found',
+    emptyIcon: <PersonIcon sx={{ fontSize: 48 }} />,
+    onSelectionChange: fn(),
+    onItemClick: fn(),
+    onItemDoubleClick: fn(),
+    onSearch: fn(),
+    onSort: fn(),
+    onReorder: fn(),
   },
 }

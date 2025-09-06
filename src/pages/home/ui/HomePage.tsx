@@ -4,7 +4,8 @@
  */
 
 import React from 'react'
-import { Box, Container, Typography, Button, Grid, Paper } from '@mui/material'
+import { Box, Container, Typography, Button, Paper } from '@mui/material'
+import Grid from '@mui/material/Grid'
 import { HeaderWidget } from '@/widgets/header'
 import { useRouter } from 'next/navigation'
 import AddIcon from '@mui/icons-material/Add'
@@ -37,7 +38,7 @@ export const HomePage: React.FC = () => {
           </Box>
 
           <Grid container spacing={4} sx={{ mt: 4 }}>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Paper
                 elevation={3}
                 sx={{
@@ -72,7 +73,7 @@ export const HomePage: React.FC = () => {
               </Paper>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Paper
                 elevation={3}
                 sx={{
@@ -113,22 +114,22 @@ export const HomePage: React.FC = () => {
               Key Features
             </Typography>
             <Grid container spacing={2} sx={{ mt: 2 }}>
-              <Grid item xs={12} md={3}>
+              <Grid size={{ xs: 12, md: 3 }}>
                 <Typography variant="body2" color="text.secondary">
                   ✨ Dynamic JavaScript execution
                 </Typography>
               </Grid>
-              <Grid item xs={12} md={3}>
+              <Grid size={{ xs: 12, md: 3 }}>
                 <Typography variant="body2" color="text.secondary">
                   🧪 Test case management
                 </Typography>
               </Grid>
-              <Grid item xs={12} md={3}>
+              <Grid size={{ xs: 12, md: 3 }}>
                 <Typography variant="body2" color="text.secondary">
                   💉 TPN advisor functions
                 </Typography>
               </Grid>
-              <Grid item xs={12} md={3}>
+              <Grid size={{ xs: 12, md: 3 }}>
                 <Typography variant="body2" color="text.secondary">
                   🔄 Real-time preview
                 </Typography>

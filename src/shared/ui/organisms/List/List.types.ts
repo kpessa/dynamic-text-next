@@ -1,5 +1,5 @@
 import { ReactNode, MouseEvent } from 'react'
-import { SxProps, Theme } from '@mui/material'
+import { SxProps, Theme, TypographyProps } from '@mui/material'
 
 export interface ListItemData<T = any> {
   id: string | number
@@ -11,18 +11,22 @@ export interface ListItemData<T = any> {
   disabled?: boolean
   selected?: boolean
   divider?: boolean
+  primaryTypographyProps?: TypographyProps
+  secondaryTypographyProps?: TypographyProps
   data?: T
 }
 
 export interface ListProps<T = any> {
+  // Data
   items: ListItemData<T>[]
   loading?: boolean
   error?: string | null
   
-  // Variants
+  // Display Options
   variant?: 'simple' | 'interactive' | 'nested'
   dense?: boolean
   disablePadding?: boolean
+  divided?: boolean
   
   // Selection
   selectable?: boolean
@@ -39,12 +43,6 @@ export interface ListProps<T = any> {
   defaultExpanded?: (string | number)[]
   onExpandChange?: (expandedIds: (string | number)[]) => void
   
-  // Virtual Scrolling
-  virtualized?: boolean
-  itemHeight?: number | ((index: number) => number)
-  overscan?: number
-  height?: number | string
-  
   // Empty State
   emptyMessage?: string
   emptyIcon?: ReactNode
@@ -55,47 +53,60 @@ export interface ListProps<T = any> {
   itemSx?: SxProps<Theme>
   subheader?: ReactNode
   
-  // Search/Filter
+  // Search (only for interactive variant)
   searchable?: boolean
   searchPlaceholder?: string
   onSearch?: (query: string) => void
-  filterMode?: 'local' | 'server'
   
-  // Sorting
+  // Sorting (only for interactive variant)
   sortable?: boolean
-  sortBy?: 'primary' | 'secondary' | 'custom'
+  sortBy?: 'primary' | 'secondary'
   sortOrder?: 'asc' | 'desc'
   onSort?: (sortBy: string, sortOrder: 'asc' | 'desc') => void
-  customSort?: (a: ListItemData<T>, b: ListItemData<T>) => number
   
   // Grouping
   grouped?: boolean
   groupBy?: (item: ListItemData<T>) => string
   groupHeaders?: Map<string, ReactNode>
   
-  // Load More / Infinite Scroll
+  // Infinite Scroll
   hasMore?: boolean
   onLoadMore?: () => void
   loadingMore?: boolean
   
-  // Swipe Actions (mobile)
-  swipeActions?: {
-    left?: (item: ListItemData<T>) => ReactNode
-    right?: (item: ListItemData<T>) => ReactNode
-  }
-  
-  // Drag and Drop
+  // Drag and Drop (only for interactive variant)
   draggable?: boolean
   onReorder?: (items: ListItemData<T>[]) => void
   
-  // Custom Components
-  customItemRenderer?: (item: ListItemData<T>, index: number) => ReactNode
-  customEmptyState?: ReactNode
-  customLoadingState?: ReactNode
+  // Custom Rendering
+  renderItem?: (item: ListItemData<T>, index: number) => ReactNode
+  renderEmpty?: ReactNode
+  renderLoading?: ReactNode
 }
 
-export interface VirtualListProps<T = any> extends ListProps<T> {
-  virtualized: true
-  height: number | string
-  itemHeight: number | ((index: number) => number)
+// Type guards
+export function isListItemData<T>(item: any): item is ListItemData<T> {
+  return item && typeof item === 'object' && 'id' in item && 'primary' in item
+}
+
+// Common presets for ease of use
+export interface SimpleListProps<T = any> extends Omit<ListProps<T>, 
+  'variant' | 'searchable' | 'sortable' | 'draggable' | 'grouped'
+> {
+  variant?: 'simple'
+}
+
+export interface InteractiveListProps<T = any> extends ListProps<T> {
+  variant: 'interactive'
+  searchable?: boolean
+  sortable?: boolean
+  draggable?: boolean
+}
+
+export interface NestedListProps<T = any> extends Omit<ListProps<T>, 
+  'variant' | 'nestedItems' | 'defaultExpanded'
+> {
+  variant: 'nested'
+  nestedItems: Map<string | number, ListItemData<T>[]>
+  defaultExpanded?: (string | number)[]
 }

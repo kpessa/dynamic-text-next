@@ -20,7 +20,7 @@ export const CircularProgress = React.forwardRef<HTMLSpanElement, CircularProgre
     ref
   ) => {
     const progressValue = determinate && value !== undefined ? value : undefined
-    const variant = determinate ? 'determinate' : 'indeterminate'
+    const variant: 'determinate' | 'indeterminate' = determinate ? 'determinate' : 'indeterminate'
 
     if (showLabel && determinate) {
       return (

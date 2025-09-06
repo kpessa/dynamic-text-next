@@ -39,14 +39,19 @@ export class UserModel {
   }
 
   updatePreferences(updates: Partial<UserPreferences>): User {
+    const currentPreferences = this.user.metadata?.preferences || {
+      theme: 'system' as const,
+      autoSave: true
+    }
+    
     return {
       ...this.user,
       metadata: {
         ...this.user.metadata,
         preferences: {
-          ...this.user.metadata?.preferences,
+          ...currentPreferences,
           ...updates
-        }
+        } as UserPreferences
       }
     }
   }

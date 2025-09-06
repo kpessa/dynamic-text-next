@@ -42,7 +42,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
         onDismiss()
       }
       if (onClose) {
-        onClose(new Event('close'), 'timeout')
+        onClose(new Event('close'))
       }
     }
 

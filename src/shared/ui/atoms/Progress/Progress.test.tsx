@@ -26,7 +26,8 @@ describe('Progress', () => {
     it('should apply custom size', () => {
       const { container } = render(<CircularProgress size={60} />)
       const svg = container.querySelector('svg')
-      expect(svg).toHaveStyle({ width: '60px', height: '60px' })
+      expect(svg).toHaveAttribute('width', '60')
+      expect(svg).toHaveAttribute('height', '60')
     })
 
     it('should apply custom thickness', () => {

@@ -163,7 +163,7 @@ const theme = createTheme({
       styleOverrides: {
         root: ({ theme }) => ({
           border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-          borderRadius: theme.shape.borderRadius * 2,
+          borderRadius: (theme.shape.borderRadius as number) * 2,
         }),
       },
     },

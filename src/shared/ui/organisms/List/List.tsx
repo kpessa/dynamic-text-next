@@ -16,10 +16,10 @@ import {
   Typography,
   CircularProgress,
   Alert,
-  Divider,
   InputAdornment,
   Paper,
-  Chip
+  Chip,
+  Divider
 } from '@mui/material'
 import {
   ExpandLess,
@@ -28,77 +28,75 @@ import {
   Clear as ClearIcon,
   DragIndicator as DragIcon
 } from '@mui/icons-material'
-// import { FixedSizeList, VariableSizeList } from 'react-window' // Commented out - causing issues
 import { ListProps, ListItemData } from './List.types'
-
-// Default empty values to prevent re-renders
-const DEFAULT_SELECTED: (string | number)[] = []
-const DEFAULT_EXPANDED: (string | number)[] = []
-const DEFAULT_NESTED_ITEMS = new Map()
 
 export function List<T = any>({
   items,
   loading = false,
   error = null,
   
+  // Display
   variant = 'simple',
   dense = false,
   disablePadding = false,
+  divided = false,
   
+  // Selection
   selectable = false,
   multiSelect = false,
-  selectedItems = DEFAULT_SELECTED,
+  selectedItems = [],
   onSelectionChange,
   
+  // Interaction
   onItemClick,
   onItemDoubleClick,
   
-  nestedItems = DEFAULT_NESTED_ITEMS,
-  defaultExpanded = DEFAULT_EXPANDED,
+  // Nested Items
+  nestedItems,
+  defaultExpanded = [],
   onExpandChange,
   
-  virtualized = false,
-  itemHeight = 56,
-  overscan = 3,
-  height = 400,
-  
+  // Empty State
   emptyMessage = 'No items to display',
   emptyIcon,
   emptyAction,
   
+  // Styling
   sx,
   itemSx,
   subheader,
   
+  // Search (only for interactive variant)
   searchable = false,
   searchPlaceholder = 'Search...',
   onSearch,
-  filterMode = 'local',
   
+  // Sorting (only for interactive variant)
   sortable = false,
   sortBy = 'primary',
   sortOrder = 'asc',
   onSort,
-  customSort,
   
+  // Grouping
   grouped = false,
   groupBy,
-  groupHeaders = new Map(),
+  groupHeaders,
   
+  // Infinite Scroll
   hasMore = false,
   onLoadMore,
   loadingMore = false,
   
-  swipeActions,
-  
+  // Drag and Drop (only for interactive variant)
   draggable = false,
   onReorder,
   
-  customItemRenderer,
-  customEmptyState,
-  customLoadingState
+  // Custom Rendering
+  renderItem,
+  renderEmpty,
+  renderLoading
 }: ListProps<T>) {
-  // State
+  // State management
   const [selectedSet, setSelectedSet] = useState<Set<string | number>>(
     new Set(selectedItems)
   )
@@ -106,81 +104,57 @@ export function List<T = any>({
     new Set(defaultExpanded)
   )
   const [searchQuery, setSearchQuery] = useState('')
-  const [localSortBy, setLocalSortBy] = useState(sortBy)
   const [localSortOrder, setLocalSortOrder] = useState(sortOrder)
-  const [draggedItem, setDraggedItem] = useState<ListItemData<T> | null>(null)
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
   
-  // Ref for virtualized list (if we re-enable react-window)
-  const listRef = useRef<any>(null)
   const observerTarget = useRef<HTMLDivElement>(null)
-
+  
+  // Determine if interactive features are enabled
+  const isInteractive = variant === 'interactive'
+  const showSearch = isInteractive && searchable
+  const showSort = isInteractive && sortable
+  const showDrag = isInteractive && draggable
+  
   // Update selected set when prop changes
   useEffect(() => {
-    // Only update if selectedItems actually changed (not just a new array reference)
-    const newSelectedSet = new Set(selectedItems)
-    setSelectedSet(current => {
-      // Check if the sets are different
-      if (current.size !== newSelectedSet.size) return newSelectedSet
-      for (const item of newSelectedSet) {
-        if (!current.has(item)) return newSelectedSet
-      }
-      return current // No change needed
-    })
+    setSelectedSet(new Set(selectedItems))
   }, [selectedItems])
-
+  
   // Filter items based on search
   const filteredItems = useMemo(() => {
-    if (!searchable || filterMode === 'server' || !searchQuery) {
+    if (!showSearch || !searchQuery.trim()) {
       return items
     }
-
+    
+    const query = searchQuery.toLowerCase()
     return items.filter(item => {
-      const primaryText = typeof item.primary === 'string' ? item.primary : ''
-      const secondaryText = typeof item.secondary === 'string' ? item.secondary : ''
-      const searchLower = searchQuery.toLowerCase()
-      
-      return (
-        primaryText.toLowerCase().includes(searchLower) ||
-        secondaryText.toLowerCase().includes(searchLower)
-      )
+      const primary = String(item.primary || '').toLowerCase()
+      const secondary = String(item.secondary || '').toLowerCase()
+      return primary.includes(query) || secondary.includes(query)
     })
-  }, [items, searchable, filterMode, searchQuery])
-
+  }, [items, showSearch, searchQuery])
+  
   // Sort items
   const sortedItems = useMemo(() => {
-    if (!sortable) return filteredItems
-
-    const sorted = [...filteredItems]
+    if (!showSort) return filteredItems
     
-    if (customSort) {
-      sorted.sort(customSort)
-      if (localSortOrder === 'desc') sorted.reverse()
-    } else {
-      sorted.sort((a, b) => {
-        const aValue = localSortBy === 'primary' ? a.primary : a.secondary
-        const bValue = localSortBy === 'primary' ? b.primary : b.secondary
-        
-        const aString = String(aValue || '')
-        const bString = String(bValue || '')
-        
-        if (localSortOrder === 'asc') {
-          return aString.localeCompare(bString)
-        } else {
-          return bString.localeCompare(aString)
-        }
-      })
-    }
-
+    const sorted = [...filteredItems]
+    sorted.sort((a, b) => {
+      const aValue = sortBy === 'primary' ? a.primary : a.secondary
+      const bValue = sortBy === 'primary' ? b.primary : b.secondary
+      const comparison = String(aValue || '').localeCompare(String(bValue || ''))
+      return localSortOrder === 'asc' ? comparison : -comparison
+    })
+    
     return sorted
-  }, [filteredItems, sortable, localSortBy, localSortOrder, customSort])
-
-  // Group items
+  }, [filteredItems, showSort, sortBy, localSortOrder])
+  
+  // Group items if needed
   const groupedItems = useMemo(() => {
     if (!grouped || !groupBy) return null
-
-    const groups = new Map<string, ListItemData<T>[]>()
     
+    const groups = new Map<string, ListItemData<T>[]>()
     sortedItems.forEach(item => {
       const group = groupBy(item)
       if (!groups.has(group)) {
@@ -188,30 +162,27 @@ export function List<T = any>({
       }
       groups.get(group)!.push(item)
     })
-
+    
     return groups
   }, [grouped, groupBy, sortedItems])
-
+  
   // Final items list (grouped or flat)
   const finalItems = useMemo(() => {
     if (groupedItems) {
       const result: (ListItemData<T> | { isHeader: true; group: string })[] = []
-      
       groupedItems.forEach((items, group) => {
         result.push({ isHeader: true, group } as any)
         result.push(...items)
       })
-      
       return result
     }
-    
     return sortedItems
   }, [groupedItems, sortedItems])
-
+  
   // Infinite scroll observer
   useEffect(() => {
     if (!hasMore || !onLoadMore || loadingMore) return
-
+    
     const observer = new IntersectionObserver(
       entries => {
         if (entries[0].isIntersecting) {
@@ -220,22 +191,25 @@ export function List<T = any>({
       },
       { threshold: 1.0 }
     )
-
+    
     if (observerTarget.current) {
       observer.observe(observerTarget.current)
     }
-
+    
     return () => {
       if (observerTarget.current) {
         observer.unobserve(observerTarget.current)
       }
     }
   }, [hasMore, onLoadMore, loadingMore])
-
+  
   // Handlers
-  const handleToggleSelect = useCallback((itemId: string | number) => {
+  const handleToggleSelect = useCallback((itemId: string | number, event?: React.MouseEvent) => {
     if (!selectable) return
-
+    
+    // Prevent event bubbling
+    event?.stopPropagation()
+    
     const newSelected = new Set(selectedSet)
     
     if (multiSelect) {
@@ -245,6 +219,7 @@ export function List<T = any>({
         newSelected.add(itemId)
       }
     } else {
+      // Single select mode
       if (newSelected.has(itemId)) {
         newSelected.clear()
       } else {
@@ -254,15 +229,13 @@ export function List<T = any>({
     }
     
     setSelectedSet(newSelected)
-    
-    if (onSelectionChange) {
-      onSelectionChange(Array.from(newSelected))
-    }
+    onSelectionChange?.(Array.from(newSelected))
   }, [selectable, multiSelect, selectedSet, onSelectionChange])
-
-  const handleToggleExpand = useCallback((itemId: string | number) => {
-    const newExpanded = new Set(expandedSet)
+  
+  const handleToggleExpand = useCallback((itemId: string | number, event?: React.MouseEvent) => {
+    event?.stopPropagation()
     
+    const newExpanded = new Set(expandedSet)
     if (newExpanded.has(itemId)) {
       newExpanded.delete(itemId)
     } else {
@@ -270,113 +243,109 @@ export function List<T = any>({
     }
     
     setExpandedSet(newExpanded)
-    
-    if (onExpandChange) {
-      onExpandChange(Array.from(newExpanded))
-    }
+    onExpandChange?.(Array.from(newExpanded))
   }, [expandedSet, onExpandChange])
-
+  
+  const handleItemClick = useCallback((item: ListItemData<T>, event: React.MouseEvent) => {
+    // Handle selection if selectable
+    if (selectable && !item.disabled) {
+      handleToggleSelect(item.id, event)
+    }
+    
+    // Handle expansion if has nested items
+    if (nestedItems?.has(item.id)) {
+      handleToggleExpand(item.id, event)
+    }
+    
+    // Call custom click handler
+    onItemClick?.(item, event)
+  }, [selectable, nestedItems, handleToggleSelect, handleToggleExpand, onItemClick])
+  
   const handleSearch = useCallback((value: string) => {
     setSearchQuery(value)
-    if (onSearch) {
-      onSearch(value)
-    }
+    onSearch?.(value)
   }, [onSearch])
-
+  
   const handleSort = useCallback(() => {
-    if (!sortable) return
-    
     const newOrder = localSortOrder === 'asc' ? 'desc' : 'asc'
     setLocalSortOrder(newOrder)
-    
-    if (onSort) {
-      onSort(localSortBy, newOrder)
-    }
-  }, [sortable, localSortBy, localSortOrder, onSort])
-
+    onSort?.(sortBy, newOrder)
+  }, [sortBy, localSortOrder, onSort])
+  
   // Drag and Drop handlers
-  const handleDragStart = useCallback((e: React.DragEvent, item: ListItemData<T>) => {
-    setDraggedItem(item)
-    e.dataTransfer.effectAllowed = 'move'
+  const handleDragStart = useCallback((index: number) => {
+    setDraggedIndex(index)
   }, [])
-
+  
   const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
     e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
     setDragOverIndex(index)
   }, [])
-
-  const handleDragEnd = useCallback(() => {
-    setDraggedItem(null)
-    setDragOverIndex(null)
-  }, [])
-
+  
   const handleDrop = useCallback((e: React.DragEvent, dropIndex: number) => {
     e.preventDefault()
     
-    if (!draggedItem || !onReorder) return
+    if (draggedIndex === null || draggedIndex === dropIndex) return
     
-    const dragIndex = finalItems.findIndex(item => 
-      'id' in item && item.id === draggedItem.id
-    )
+    const newItems = [...items]
+    const [draggedItem] = newItems.splice(draggedIndex, 1)
+    newItems.splice(dropIndex, 0, draggedItem)
     
-    if (dragIndex === -1 || dragIndex === dropIndex) return
-    
-    const newItems = [...finalItems.filter(item => 'id' in item)] as ListItemData<T>[]
-    const [removed] = newItems.splice(dragIndex, 1)
-    newItems.splice(dropIndex, 0, removed)
-    
-    onReorder(newItems)
-    handleDragEnd()
-  }, [draggedItem, finalItems, onReorder, handleDragEnd])
-
+    onReorder?.(newItems)
+    setDraggedIndex(null)
+    setDragOverIndex(null)
+  }, [draggedIndex, items, onReorder])
+  
   // Render single item
-  const renderItem = useCallback((item: ListItemData<T> | { isHeader: true; group: string }, index: number) => {
+  const renderListItem = useCallback((item: ListItemData<T> | { isHeader: true; group: string }, index: number) => {
     // Group header
     if ('isHeader' in item) {
       return (
         <ListSubheader key={`header-${item.group}`} component="div">
-          {groupHeaders.get(item.group) || item.group}
+          {groupHeaders?.get(item.group) || item.group}
         </ListSubheader>
       )
     }
-
+    
     // Custom renderer
-    if (customItemRenderer) {
-      return customItemRenderer(item, index)
+    if (renderItem) {
+      return renderItem(item, index)
     }
-
-    const hasNested = nestedItems.has(item.id)
+    
+    const hasNested = nestedItems?.has(item.id)
     const isExpanded = expandedSet.has(item.id)
     const isSelected = selectedSet.has(item.id)
-    const isDragging = draggedItem?.id === item.id
+    const isDragging = draggedIndex === index
     const isDragOver = dragOverIndex === index
-
+    
     return (
       <React.Fragment key={item.id}>
         <ListItem
           disablePadding={disablePadding}
-          divider={item.divider}
+          divider={divided || item.divider}
           sx={{
             ...itemSx,
             opacity: isDragging ? 0.5 : 1,
             backgroundColor: isDragOver ? 'action.hover' : undefined,
             transition: 'background-color 0.2s'
           }}
-          draggable={draggable}
-          onDragStart={(e) => draggable && handleDragStart(e, item)}
-          onDragOver={(e) => draggable && handleDragOver(e, index)}
-          onDragEnd={draggable ? handleDragEnd : undefined}
-          onDrop={(e) => draggable && handleDrop(e, index)}
+          draggable={showDrag && !item.disabled}
+          onDragStart={() => showDrag && handleDragStart(index)}
+          onDragOver={(e) => showDrag && handleDragOver(e, index)}
+          onDrop={(e) => showDrag && handleDrop(e, index)}
           secondaryAction={
             item.action || (hasNested && (
-              <IconButton onClick={() => handleToggleExpand(item.id)}>
+              <IconButton 
+                edge="end"
+                onClick={(e) => handleToggleExpand(item.id, e)}
+                size="small"
+              >
                 {isExpanded ? <ExpandLess /> : <ExpandMore />}
               </IconButton>
             ))
           }
         >
-          {draggable && (
+          {showDrag && (
             <ListItemIcon>
               <DragIcon />
             </ListItemIcon>
@@ -387,8 +356,9 @@ export function List<T = any>({
               <Checkbox
                 edge="start"
                 checked={isSelected}
-                onChange={() => handleToggleSelect(item.id)}
+                onChange={(e) => handleToggleSelect(item.id, e as any)}
                 disabled={item.disabled}
+                onClick={(e) => e.stopPropagation()}
               />
             </ListItemIcon>
           )}
@@ -404,30 +374,29 @@ export function List<T = any>({
           <ListItemButton
             dense={dense}
             disabled={item.disabled}
-            selected={item.selected}
-            onClick={(e) => {
-              if (onItemClick) onItemClick(item, e)
-              if (selectable && !e.defaultPrevented) {
-                handleToggleSelect(item.id)
-              }
-              if (hasNested && !e.defaultPrevented) {
-                handleToggleExpand(item.id)
-              }
-            }}
-            onDoubleClick={(e) => onItemDoubleClick && onItemDoubleClick(item, e)}
+            selected={item.selected || (variant === 'simple' && isSelected)}
+            onClick={(e) => handleItemClick(item, e)}
+            onDoubleClick={(e) => onItemDoubleClick?.(item, e)}
           >
             <ListItemText
               primary={item.primary}
               secondary={item.secondary}
+              primaryTypographyProps={item.primaryTypographyProps}
+              secondaryTypographyProps={item.secondaryTypographyProps}
             />
           </ListItemButton>
         </ListItem>
         
+        {/* Nested items */}
         {hasNested && (
           <Collapse in={isExpanded} timeout="auto" unmountOnExit>
             <MuiList component="div" disablePadding sx={{ pl: 4 }}>
-              {nestedItems.get(item.id)?.map((nestedItem) => (
-                <ListItem key={nestedItem.id} disablePadding={disablePadding}>
+              {nestedItems?.get(item.id)?.map((nestedItem) => (
+                <ListItem 
+                  key={nestedItem.id} 
+                  disablePadding={disablePadding}
+                  divider={divided || nestedItem.divider}
+                >
                   {nestedItem.icon && (
                     <ListItemIcon>{nestedItem.icon}</ListItemIcon>
                   )}
@@ -435,7 +404,8 @@ export function List<T = any>({
                     dense={dense}
                     disabled={nestedItem.disabled}
                     selected={nestedItem.selected}
-                    onClick={(e) => onItemClick && onItemClick(nestedItem, e)}
+                    onClick={(e) => onItemClick?.(nestedItem, e)}
+                    onDoubleClick={(e) => onItemDoubleClick?.(nestedItem, e)}
                   >
                     <ListItemText
                       primary={nestedItem.primary}
@@ -455,46 +425,39 @@ export function List<T = any>({
       </React.Fragment>
     )
   }, [
-    customItemRenderer,
+    renderItem,
     nestedItems,
     expandedSet,
     selectedSet,
-    draggedItem,
+    draggedIndex,
     dragOverIndex,
     disablePadding,
+    divided,
     itemSx,
-    draggable,
+    showDrag,
     selectable,
     dense,
-    onItemClick,
-    onItemDoubleClick,
-    handleToggleSelect,
-    handleToggleExpand,
+    variant,
     handleDragStart,
     handleDragOver,
-    handleDragEnd,
     handleDrop,
+    handleToggleExpand,
+    handleToggleSelect,
+    handleItemClick,
+    onItemDoubleClick,
+    onItemClick,
     groupHeaders
   ])
-
-  // Virtual list row renderer - commented out until react-window v2 issues are resolved
-  // const VirtualRow = useCallback(({ index, style }: { index: number; style: React.CSSProperties }) => {
-  //   return (
-  //     <div style={style}>
-  //       {renderItem(finalItems[index], index)}
-  //     </div>
-  //   )
-  // }, [finalItems, renderItem])
-
+  
   // Loading state
   if (loading) {
-    return customLoadingState || (
+    return renderLoading || (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight={200}>
         <CircularProgress />
       </Box>
     )
   }
-
+  
   // Error state
   if (error) {
     return (
@@ -503,10 +466,10 @@ export function List<T = any>({
       </Alert>
     )
   }
-
+  
   // Empty state
   if (items.length === 0) {
-    return customEmptyState || (
+    return renderEmpty || (
       <Box
         display="flex"
         flexDirection="column"
@@ -516,7 +479,7 @@ export function List<T = any>({
         p={3}
       >
         {emptyIcon}
-        <Typography variant="h6" color="text.secondary" mt={2}>
+        <Typography variant="body1" color="text.secondary" mt={2}>
           {emptyMessage}
         </Typography>
         {emptyAction && (
@@ -527,19 +490,14 @@ export function List<T = any>({
       </Box>
     )
   }
-
-  // Row height function - commented out until react-window v2 issues are resolved
-  // const getRowHeight = useCallback((index: number) => {
-  //   if (typeof itemHeight === 'function') {
-  //     return itemHeight(index)
-  //   }
-  //   return itemHeight
-  // }, [itemHeight])
-
+  
+  // Determine wrapper component
+  const WrapperComponent = isInteractive || showSearch || showSort ? Paper : Box
+  
   return (
-    <Paper sx={sx} elevation={0}>
+    <WrapperComponent sx={sx} elevation={isInteractive ? 1 : 0}>
       {/* Search Bar */}
-      {searchable && (
+      {showSearch && (
         <Box p={2} borderBottom={1} borderColor="divider">
           <TextField
             fullWidth
@@ -564,32 +522,32 @@ export function List<T = any>({
           />
         </Box>
       )}
-
+      
       {/* Sort Controls */}
-      {sortable && (
+      {showSort && (
         <Box p={1} borderBottom={1} borderColor="divider" display="flex" alignItems="center">
           <Typography variant="caption" sx={{ mr: 1 }}>
             Sort by:
           </Typography>
           <Chip
-            label={`${localSortBy} ${localSortOrder === 'asc' ? '↑' : '↓'}`}
+            label={`${sortBy} ${localSortOrder === 'asc' ? '↑' : '↓'}`}
             onClick={handleSort}
             size="small"
           />
         </Box>
       )}
-
-      {/* List - Virtualization temporarily disabled due to react-window v2 issues */}
+      
+      {/* List */}
       <MuiList
         dense={dense}
         disablePadding={disablePadding}
         subheader={subheader}
       >
-        {finalItems.map((item, index) => renderItem(item, index))}
+        {finalItems.map((item, index) => renderListItem(item, index))}
       </MuiList>
-
+      
       {/* Load More */}
-      {hasMore && !virtualized && (
+      {hasMore && (
         <Box ref={observerTarget} p={2} display="flex" justifyContent="center">
           {loadingMore ? (
             <CircularProgress size={24} />
@@ -600,6 +558,6 @@ export function List<T = any>({
           )}
         </Box>
       )}
-    </Paper>
+    </WrapperComponent>
   )
 }

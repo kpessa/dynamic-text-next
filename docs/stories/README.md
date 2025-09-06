@@ -10,16 +10,36 @@ This directory contains detailed documentation for each story in the Svelte 5 to
 - ❌ **BLOCKED** - Blocked by dependencies
 
 ## Completed Stories
-- [STORY-003: Storybook Configuration](./STORY-003-storybook-setup.md) ✅
-- [STORY-004: Material UI Design System Setup](./STORY-004-material-ui-setup.md) ✅
+
+### Epic 1: Infrastructure Setup
+- [1.1: Storybook Configuration](./1.1.storybook-configuration.md) ✅
+- [1.2: Material UI Design System Setup](./1.2.material-ui-design-system.md) ✅
+- [1.3: FSD Architecture Migration](./1.3.fsd-architecture-migration.md) 🚧
+
+### Epic 2: Core UI Components
+- [2.1: Core UI Components Library](./2.1.core-ui-components.md) 🚧 (Phase 6/8 Complete)
 
 ## Upcoming Stories
-- [STORY-005: FSD Architecture Migration](./STORY-005-fsd-architecture.md) 🚧
-- STORY-006: Firebase Integration 📋
-- STORY-007: TPN Feature Migration 📋
-- STORY-008: Testing Infrastructure 📋
-- STORY-009: Performance Optimization 📋
-- STORY-010: Deployment & CI/CD 📋
+
+### Epic 3: Backend Integration
+- 3.1: Firebase Authentication 📋
+- 3.2: Firebase Firestore Setup 📋
+- 3.3: Real-time Data Sync 📋
+
+### Epic 4: TPN Features
+- 4.1: TPN Advisor Functions Migration 📋
+- 4.2: Dynamic Text Editor 📋
+- 4.3: Formula Calculations 📋
+
+### Epic 5: Testing & Quality
+- 5.1: Testing Infrastructure Setup 📋
+- 5.2: E2E Testing with Playwright 📋
+- 5.3: Visual Regression Testing 📋
+
+### Epic 6: Performance & Deployment
+- 6.1: Performance Optimization 📋
+- 6.2: PWA Implementation 📋
+- 6.3: CI/CD Pipeline Setup 📋
 
 ## Story Template
 Each story document should include:
@@ -47,8 +67,15 @@ Each story document should include:
 - [Project README](../README.md)
 - [Storybook](http://localhost:6006)
 
-## Notes
-- Stories are numbered sequentially (STORY-XXX)
+## Story Numbering Convention
+- Stories use Epic.Story format (e.g., 1.1, 1.2, 2.1)
+- Epic numbers represent major feature areas in logical sequence:
+  - **Epic 1**: Infrastructure Setup (Foundation)
+  - **Epic 2**: Core UI Components (Building blocks)
+  - **Epic 3**: Backend Integration (Data layer)
+  - **Epic 4**: TPN Features (Business logic)
+  - **Epic 5**: Testing & Quality (Validation)
+  - **Epic 6**: Performance & Deployment (Production)
 - Each story should be self-contained with clear acceptance criteria
 - Dependencies between stories should be clearly documented
 - Keep story documents updated as work progresses
