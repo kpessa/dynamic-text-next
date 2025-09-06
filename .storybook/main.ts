@@ -1,4 +1,6 @@
 import type { StorybookConfig } from '@storybook/react-vite';
+import { loadEnv } from 'vite';
+import { resolve } from 'path';
 
 const config: StorybookConfig = {
   stories: [
@@ -33,7 +35,16 @@ const config: StorybookConfig = {
       },
     },
   },
-  viteFinal: async (config) => {
+  viteFinal: async (config, { configType }) => {
+    // Load environment variables from .env.local
+    const env = loadEnv(configType || 'development', process.cwd(), '');
+    
+    // Pass environment variables to Vite's define config
+    config.define = {
+      ...config.define,
+      'process.env': JSON.stringify(env),
+    };
+    
     // Add path aliases
     config.resolve = {
       ...config.resolve,

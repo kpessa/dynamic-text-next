@@ -5,11 +5,29 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { Provider } from 'react-redux';
 import { store } from '../src/app/store';
 import { lightTheme, darkTheme } from '../src/app/themes';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import '../src/app/styles/globals.css';
+
+// Polyfill process.env for Storybook
+if (typeof window !== 'undefined' && !(globalThis as any).process) {
+  (globalThis as any).process = {
+    env: {
+      // Firebase configuration from .env.local
+      NEXT_PUBLIC_FIREBASE_API_KEY: 'AIzaSyBiKTA9vgBQF63TM-Jd8g8rAcXCNZYNg8o',
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: 'dynamic-text-dea93.firebaseapp.com',
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: 'dynamic-text-dea93',
+      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: 'dynamic-text-dea93.firebasestorage.app',
+      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: '54073442061',
+      NEXT_PUBLIC_FIREBASE_APP_ID: '1:54073442061:web:e33f900517e52c07347a44',
+      NEXT_PUBLIC_USE_FIREBASE_EMULATOR: 'false',
+    }
+  };
+}
 
 const preview: Preview = {
   parameters: {
@@ -67,18 +85,20 @@ const preview: Preview = {
       return (
         <Provider store={store}>
           <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <div 
-              style={{ 
-                padding: '20px',
-                minHeight: '100vh',
-                backgroundColor: theme.palette.background.default,
-                color: theme.palette.text.primary,
-                transition: 'background-color 0.3s ease, color 0.3s ease',
-              }}
-            >
-              <Story />
-            </div>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <CssBaseline />
+              <div 
+                style={{ 
+                  padding: '20px',
+                  minHeight: '100vh',
+                  backgroundColor: theme.palette.background.default,
+                  color: theme.palette.text.primary,
+                  transition: 'background-color 0.3s ease, color 0.3s ease',
+                }}
+              >
+                <Story />
+              </div>
+            </LocalizationProvider>
           </ThemeProvider>
         </Provider>
       );

@@ -20,6 +20,13 @@ import simulationReducer from '@/entities/simulation/model/simulationSlice'
 import referenceReducer from '@/entities/reference/model/referenceSlice'
 import ingredientReducer from '@/entities/ingredient/model/ingredientSlice'
 import functionsReducer from '@/features/functions/model/functionsSlice'
+import sectionReducer from '@/entities/section/model/sectionModel'
+import editorReducer from '@/features/text-editor/model/editorSlice'
+import kptReducer from '@/features/kpt-functions/model/kptSlice'
+import aiTestReducer from '@/features/ai-test-generation/model/aiTestSlice'
+import versionReducer from '@/features/version-history/model/versionSlice'
+import sharedIngredientReducer from '@/features/shared-ingredients/model/sharedIngredientSlice'
+import diffViewerReducer from '@/features/diff-viewer/model/diffSlice'
 import { optimisticUpdatesMiddleware } from './store/middleware/optimisticUpdates'
 
 // Persist config for auth
@@ -42,6 +49,13 @@ export const store = configureStore({
     reference: referenceReducer,
     ingredient: ingredientReducer,
     functions: functionsReducer,
+    sections: sectionReducer,
+    editor: editorReducer,
+    kpt: kptReducer,
+    aiTest: aiTestReducer,
+    version: versionReducer,
+    sharedIngredients: sharedIngredientReducer,
+    diffViewer: diffViewerReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

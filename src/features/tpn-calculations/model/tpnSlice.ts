@@ -1,53 +1,151 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '@/app/store'
-
-export interface TPNValues {
-  [key: string]: number | string | undefined
-}
+import type { 
+  TPNInstance, 
+  TPNValues, 
+  TPNAdvisorType, 
+  CalculationHistory 
+} from '@/entities/tpn'
 
 interface TPNState {
-  values: TPNValues
-  populationType: 'Neonatal' | 'Pediatric' | 'Adolescent' | 'Adult'
-  isDirty: boolean
-  lastCalculated: string | null
+  instances: TPNInstance[]
+  activeInstanceId: string | null
+  advisorType: TPNAdvisorType
+  calculations: {
+    loading: boolean
+    results: TPNValues | null
+    errors: string[]
+    warnings: string[]
+  }
+  history: CalculationHistory[]
 }
 
 const initialState: TPNState = {
-  values: {},
-  populationType: 'Adult',
-  isDirty: false,
-  lastCalculated: null,
+  instances: [],
+  activeInstanceId: null,
+  advisorType: 'ADULT',
+  calculations: {
+    loading: false,
+    results: null,
+    errors: [],
+    warnings: []
+  },
+  history: []
 }
+
+export const calculateValues = createAsyncThunk(
+  'tpn/calculateValues',
+  async (values: TPNValues) => {
+    return values
+  }
+)
 
 const tpnSlice = createSlice({
   name: 'tpn',
   initialState,
   reducers: {
-    setTPNValue: (state, action: PayloadAction<{ key: string; value: number | string }>) => {
-      state.values[action.payload.key] = action.payload.value
-      state.isDirty = true
+    createInstance: (state, action: PayloadAction<TPNInstance>) => {
+      state.instances.push(action.payload)
     },
-    setTPNValues: (state, action: PayloadAction<TPNValues>) => {
-      state.values = action.payload
-      state.isDirty = true
+    updateInstance: (state, action: PayloadAction<{ id: string; changes: Partial<TPNInstance> }>) => {
+      const index = state.instances.findIndex(i => i.id === action.payload.id)
+      if (index !== -1) {
+        state.instances[index] = {
+          ...state.instances[index],
+          ...action.payload.changes,
+          updatedAt: new Date().toISOString()
+        }
+      }
     },
-    setPopulationType: (state, action: PayloadAction<TPNState['populationType']>) => {
-      state.populationType = action.payload
+    deleteInstance: (state, action: PayloadAction<string>) => {
+      state.instances = state.instances.filter(i => i.id !== action.payload)
+      if (state.activeInstanceId === action.payload) {
+        state.activeInstanceId = null
+      }
     },
-    calculateTPN: (state) => {
-      state.isDirty = false
-      state.lastCalculated = new Date().toISOString()
+    setActiveInstance: (state, action: PayloadAction<string>) => {
+      state.activeInstanceId = action.payload
     },
-    resetTPN: () => initialState,
+    setAdvisorType: (state, action: PayloadAction<TPNAdvisorType>) => {
+      state.advisorType = action.payload
+    },
+    clearCalculation: (state) => {
+      state.calculations.results = null
+      state.calculations.errors = []
+      state.calculations.warnings = []
+    },
+    addToHistory: (state, action: PayloadAction<CalculationHistory>) => {
+      state.history.push(action.payload)
+    },
+    clearHistory: (state) => {
+      state.history = []
+    },
+    setCalculationError: (state, action: PayloadAction<string>) => {
+      state.calculations.errors.push(action.payload)
+    },
+    addWarning: (state, action: PayloadAction<string>) => {
+      state.calculations.warnings.push(action.payload)
+    },
+    clearWarnings: (state) => {
+      state.calculations.warnings = []
+    }
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(calculateValues.pending, (state) => {
+        state.calculations.loading = true
+        state.calculations.errors = []
+      })
+      .addCase(calculateValues.fulfilled, (state, action) => {
+        state.calculations.loading = false
+        state.calculations.results = action.payload
+        state.calculations.errors = []
+      })
+      .addCase(calculateValues.rejected, (state, action) => {
+        state.calculations.loading = false
+        state.calculations.errors.push(action.error.message || 'Calculation failed')
+      })
+  }
 })
 
-export const { setTPNValue, setTPNValues, setPopulationType, calculateTPN, resetTPN } = tpnSlice.actions
+export const {
+  createInstance,
+  updateInstance,
+  deleteInstance,
+  setActiveInstance,
+  setAdvisorType,
+  clearCalculation,
+  addToHistory,
+  clearHistory,
+  setCalculationError,
+  addWarning,
+  clearWarnings
+} = tpnSlice.actions
 
-// Selectors
-export const selectTPNValues = (state: RootState) => state.tpn.values
-export const selectTPNValue = (key: string) => (state: RootState) => state.tpn.values[key]
-export const selectPopulationType = (state: RootState) => state.tpn.populationType
-export const selectTPNIsDirty = (state: RootState) => state.tpn.isDirty
+export const selectActiveInstance = (state: RootState): TPNInstance | null => {
+  const id = state.tpn.activeInstanceId
+  return id ? state.tpn.instances.find(i => i.id === id) || null : null
+}
+
+export const selectAllInstances = (state: RootState): TPNInstance[] => 
+  state.tpn.instances
+
+export const selectAdvisorType = (state: RootState): TPNAdvisorType => 
+  state.tpn.advisorType
+
+export const selectCalculationResults = (state: RootState): TPNValues | null => 
+  state.tpn.calculations.results
+
+export const selectCalculationHistory = (state: RootState): CalculationHistory[] => 
+  state.tpn.history
+
+export const selectCalculationErrors = (state: RootState): string[] => 
+  state.tpn.calculations.errors
+
+export const selectCalculationWarnings = (state: RootState): string[] => 
+  state.tpn.calculations.warnings
+
+export const selectCalculationLoading = (state: RootState): boolean => 
+  state.tpn.calculations.loading
 
 export default tpnSlice.reducer

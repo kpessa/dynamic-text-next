@@ -4,13 +4,24 @@ import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import { getStorage, connectStorageEmulator } from 'firebase/storage'
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions'
 
+// Get environment variables safely for both Next.js and Storybook
+const getEnvVar = (key: string): string => {
+  // Check if we're in a browser environment
+  if (typeof window !== 'undefined') {
+    // In Storybook or browser without process.env
+    return (globalThis as any).process?.env?.[key] || '';
+  }
+  // In Next.js build time or server-side
+  return process.env[key] || '';
+};
+
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '',
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '',
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || ''
+  apiKey: getEnvVar('NEXT_PUBLIC_FIREBASE_API_KEY'),
+  authDomain: getEnvVar('NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN'),
+  projectId: getEnvVar('NEXT_PUBLIC_FIREBASE_PROJECT_ID'),
+  storageBucket: getEnvVar('NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET'),
+  messagingSenderId: getEnvVar('NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID'),
+  appId: getEnvVar('NEXT_PUBLIC_FIREBASE_APP_ID')
 }
 
 let app: ReturnType<typeof initializeApp>
@@ -19,7 +30,7 @@ let auth: ReturnType<typeof getAuth>
 let storage: ReturnType<typeof getStorage>
 let functions: ReturnType<typeof getFunctions>
 
-const isEmulator = process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true'
+const isEmulator = getEnvVar('NEXT_PUBLIC_USE_FIREBASE_EMULATOR') === 'true'
 const isServer = typeof window === 'undefined'
 
 if (!isServer) {
