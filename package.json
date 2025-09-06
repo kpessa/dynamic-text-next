@@ -15,7 +15,12 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test:storybook": "test-storybook",
-    "chromatic": "chromatic --project-token=$CHROMATIC_PROJECT_TOKEN"
+    "chromatic": "chromatic --project-token=$CHROMATIC_PROJECT_TOKEN",
+    "emulators": "./scripts/start-emulators.sh",
+    "emulators:start": "firebase emulators:start",
+    "emulators:export": "firebase emulators:export ./emulator-data",
+    "functions:build": "cd functions && npm run build",
+    "functions:serve": "cd functions && npm run serve"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -69,6 +74,7 @@
     "eslint-config-next": "15.5.2",
     "eslint-plugin-boundaries": "^5.0.1",
     "eslint-plugin-storybook": "^9.1.4",
+    "firebase-functions": "^6.4.0",
     "happy-dom": "^18.0.1",
     "madge": "^8.0.0",
     "playwright": "^1.55.0",

@@ -15,9 +15,11 @@ import authReducer from '@/features/auth/model/authSlice'
 import tpnReducer from '@/features/tpn-calculations/model/tpnSlice'
 import uiReducer from '@/features/ui/model/uiSlice'
 import firebaseReducer from '@/features/firebase/model/firebaseSlice'
+import importReducer from '@/features/data-import/model/importSlice'
 import simulationReducer from '@/entities/simulation/model/simulationSlice'
 import referenceReducer from '@/entities/reference/model/referenceSlice'
 import ingredientReducer from '@/entities/ingredient/model/ingredientSlice'
+import functionsReducer from '@/features/functions/model/functionsSlice'
 import { optimisticUpdatesMiddleware } from './store/middleware/optimisticUpdates'
 
 // Persist config for auth
@@ -35,9 +37,11 @@ export const store = configureStore({
     tpn: tpnReducer,
     ui: uiReducer,
     firebase: firebaseReducer,
+    import: importReducer,
     simulation: simulationReducer,
     reference: referenceReducer,
     ingredient: ingredientReducer,
+    functions: functionsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

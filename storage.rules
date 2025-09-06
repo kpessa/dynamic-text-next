@@ -1,0 +1,10 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow public read/write access for development
+    // NOTE: This is for development only. Add proper security rules for production
+    match /{allPaths=**} {
+      allow read, write: if true;
+    }
+  }
+}
