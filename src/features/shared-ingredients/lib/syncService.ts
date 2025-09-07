@@ -7,7 +7,7 @@ import {
   serverTimestamp,
   increment
 } from 'firebase/firestore';
-import { db } from '@/shared/lib/firebase/config';
+import { db } from '@/shared/config/firebase';
 import { 
   SharedIngredient, 
   SyncOperation, 

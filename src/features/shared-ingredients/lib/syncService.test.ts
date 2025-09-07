@@ -10,7 +10,7 @@ vi.mock('firebase/firestore', () => ({
   serverTimestamp: vi.fn(() => new Date())
 }));
 
-vi.mock('@/shared/lib/firebase/config', () => ({
+vi.mock('@/shared/config/firebase', () => ({
   db: {}
 }));
 

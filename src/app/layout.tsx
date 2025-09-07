@@ -22,8 +22,18 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'Dynamic Text Editor',
+  title: {
+    default: 'Dynamic Text Editor',
+    template: '%s | Dynamic Text Editor'
+  },
   description: 'TPN advisor functions and dynamic content',
+  keywords: ['TPN', 'medical', 'calculator', 'editor', 'dynamic text'],
+  authors: [{ name: 'Dynamic Text Team' }],
+  viewport: 'width=device-width, initial-scale=1',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#121212' }
+  ],
 }
 
 export default function RootLayout({

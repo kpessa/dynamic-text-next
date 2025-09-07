@@ -9,7 +9,7 @@ import {
   serverTimestamp,
   DocumentData
 } from 'firebase/firestore';
-import { db } from '@/shared/lib/firebase/config';
+import { db } from '@/shared/config/firebase';
 import { SharedIngredient } from '@/entities/shared-ingredient';
 
 export interface ReferenceInfo {

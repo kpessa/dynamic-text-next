@@ -1,5 +1,5 @@
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/shared/lib/firebase/config';
+import { db } from '@/shared/config/firebase';
 import { IngredientPermissions, PermissionLevel } from '@/entities/shared-ingredient';
 
 export class PermissionService {

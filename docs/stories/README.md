@@ -41,6 +41,28 @@ This directory contains detailed documentation for each story in the Svelte 5 to
 - 6.2: PWA Implementation 📋
 - 6.3: CI/CD Pipeline Setup 📋
 
+### Epic 7: Feature Integration & Workflows
+- 7.1: Anonymous Authentication Flow 📋
+- 7.2: TPN Calculation Persistence 📋
+- 7.3: Ingredient Generation from TPN 📋
+- 7.4: Real-time Ingredient Synchronization 📋
+- 7.5: Population-based Comparison Workflow 📋
+- 7.6: Ingredient Linking & Deduplication 📋
+- 7.7: Version History Integration 📋
+- 7.8: Bulk Import/Export Operations 📋
+
+### Epic 8: UI Integration & Page Assembly
+- 8.1: Application Shell & Navigation 📋
+- 8.2: Dashboard/Home Page 📋
+- 8.3: TPN Calculator Page 📋
+- 8.4: Ingredient Management Page 📋
+- 8.5: Document Editor Page 📋
+- 8.6: Comparison/Diff Viewer Page 📋
+- 8.7: Settings & Preferences Page 📋
+- 8.8: Mobile-First Responsive Design 📋
+- 8.9: Loading States & Error Boundaries 📋
+- 8.10: Workflow Validation & Gap Analysis 📋
+
 ## Story Template
 Each story document should include:
 1. Status and metadata
@@ -76,6 +98,8 @@ Each story document should include:
   - **Epic 4**: TPN Features (Business logic)
   - **Epic 5**: Testing & Quality (Validation)
   - **Epic 6**: Performance & Deployment (Production)
+  - **Epic 7**: Feature Integration & Workflows (Connecting features)
+  - **Epic 8**: UI Integration & Page Assembly (Complete pages and routes)
 - Each story should be self-contained with clear acceptance criteria
 - Dependencies between stories should be clearly documented
 - Keep story documents updated as work progresses

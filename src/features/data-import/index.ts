@@ -10,6 +10,18 @@ export {
   setPreviewData,
   clearPreviewData
 } from './model/importSlice'
+export {
+  configurationSlice,
+  setConfiguration,
+  clearConfiguration,
+  updateIngredients,
+  updateFlexOverrides,
+  selectConfiguration,
+  selectIngredients,
+  selectPopulationType,
+  selectFlexOverrides,
+  selectImportHistory
+} from './model/configurationSlice'
 export { validateImport, detectDataType } from './lib/validator'
 export type { 
   TPNConfiguration,

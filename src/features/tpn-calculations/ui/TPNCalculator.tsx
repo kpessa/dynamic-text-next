@@ -18,10 +18,7 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Chip,
   Stack,
-  IconButton,
-  Tooltip,
   Grid
 } from '@mui/material'
 import {
@@ -66,7 +63,7 @@ export const TPNCalculator: React.FC = () => {
     }))
   }
 
-  const handleAdvisorChange = (event: any) => {
+  const handleAdvisorChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     dispatch(setAdvisorType(event.target.value as TPNAdvisorType))
   }
 

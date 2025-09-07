@@ -2,4 +2,5 @@
  * Editor Panel Widget Public API
  */
 
-export { EditorPanelWidget } from './ui/EditorPanelWidget'
+export { EditorPanel } from './ui/EditorPanel'
+export { SectionEditor } from './ui/SectionEditor'

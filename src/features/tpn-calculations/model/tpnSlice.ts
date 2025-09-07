@@ -88,6 +88,31 @@ const tpnSlice = createSlice({
     },
     clearWarnings: (state) => {
       state.calculations.warnings = []
+    },
+    saveCalculation: (state, action: PayloadAction<{ name: string; patientData: any }>) => {
+      if (state.calculations.results) {
+        const savedCalc: CalculationHistory = {
+          id: Date.now().toString(),
+          instanceId: state.activeInstanceId || 'default',
+          timestamp: new Date().toISOString(),
+          inputValues: action.payload.patientData,
+          calculatedValues: state.calculations.results,
+          advisorType: state.advisorType,
+          userId: 'current-user' // Would come from auth in real app
+        }
+        state.history.push(savedCalc)
+      }
+    },
+    loadCalculation: (state, action: PayloadAction<string>) => {
+      const calc = state.history.find(h => h.id === action.payload)
+      if (calc) {
+        state.advisorType = calc.advisorType
+        state.calculations.results = calc.calculatedValues
+        state.calculations.warnings = []
+      }
+    },
+    deleteCalculation: (state, action: PayloadAction<string>) => {
+      state.history = state.history.filter(h => h.id !== action.payload)
     }
   },
   extraReducers: (builder) => {
@@ -119,7 +144,10 @@ export const {
   clearHistory,
   setCalculationError,
   addWarning,
-  clearWarnings
+  clearWarnings,
+  saveCalculation,
+  loadCalculation,
+  deleteCalculation
 } = tpnSlice.actions
 
 export const selectActiveInstance = (state: RootState): TPNInstance | null => {

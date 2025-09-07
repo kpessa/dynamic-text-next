@@ -1,0 +1,256 @@
+{
+  "type": "object",
+  "value": {
+    "INGREDIENT": {
+      "type": "array",
+      "value": {
+        "KEYNAME": "",
+        "DISPLAY": "",
+        "MNEMONIC": "",
+        "UOM_DISP": "",
+        "TYPE": {
+          "ui": {
+            "type": "select",
+            "options": [
+              {
+                "name": "Macronutrient",
+                "value": "Macronutrient"
+              },
+              {
+                "name": "Micronutrient",
+                "value": "Micronutrient"
+              },
+              {
+                "name": "Additive",
+                "value": "Additive"
+              },
+              {
+                "name": "Salt",
+                "value": "Salt"
+              },
+              {
+                "name": "Diluent",
+                "value": "Diluent"
+              },
+              {
+                "name": "Other",
+                "value": "Other"
+              }
+            ]
+          }
+        },
+        "OSMO_RATIO": {
+          "type": "number"
+        },
+        "EDITMODE": {
+          "ui": {
+            "type": "select",
+            "options": [
+              {
+                "name": "None",
+                "value": "None"
+              },
+              {
+                "name": "Custom",
+                "value": "Custom"
+              }
+            ]
+          },
+          "type": "string",
+          "value": "None"
+        },
+        "PRECISION": {
+          "ui": {
+            "type": "text",
+            "hint": "How many decimal places to display"
+          },
+          "type": "number",
+          "value": "0"
+        },
+        "SPECIAL": {
+          "ui": {
+            "type": "text",
+            "hint": "Special handling support"
+          },
+          "type": "string",
+          "value": ""
+        },
+        "NOTE": {
+          "type": "array",
+          "value": {
+            "TEXT": ""
+          }
+        },
+        "ALTUOM": {
+          "type": "array",
+          "value": {
+            "NAME": "",
+            "UOM_DISP": ""
+          }
+        },
+        "REFERENCE_RANGE": {
+          "type": "array",
+          "value": {
+            "THRESHOLD": {
+              "ui": {
+                "type": "select",
+                "options": [
+                  {
+                    "name": "Feasible Low",
+                    "value": "Feasible Low"
+                  },
+                  {
+                    "name": "Critical Low",
+                    "value": "Critical Low"
+                  },
+                  {
+                    "name": "Normal Low",
+                    "value": "Normal Low"
+                  },
+                  {
+                    "name": "Normal High",
+                    "value": "Normal High"
+                  },
+                  {
+                    "name": "Critical High",
+                    "value": "Critical High"
+                  },
+                  {
+                    "name": "Feasible High",
+                    "value": "Feasible High"
+                  }
+                ]
+              }
+            },
+            "VALUE": {
+              "type": "number"
+            }
+          }
+        },
+        "LABS": {
+          "type": "array",
+          "value": {
+            "DISPLAY": "",
+            "EVENT_SET_NAME": "",
+            "GRAPH": {
+              "ui": {
+                "type": "select",
+                "options": [
+                  {
+                    "name": "Yes",
+                    "value": 1
+                  },
+                  {
+                    "name": "No",
+                    "value": 0
+                  }
+                ]
+              },
+              "type": "number",
+              "value": 1
+            }
+          }
+        },
+        "CONCENTRATION": {
+          "ui": {
+            "hint": "Used by minimum volume calculation"
+          },
+          "type": "object",
+          "value": {
+            "STRENGTH": {
+              "ui": {
+                "type": "text"
+              },
+              "type": "number",
+              "value": 0
+            },
+            "STRENGTH_UOM": {
+              "ui": {
+                "type": "text"
+              },
+              "type": "string",
+              "value": ""
+            },
+            "VOLUME": {
+              "ui": {
+                "type": "text"
+              },
+              "type": "number",
+              "value": 0
+            },
+            "VOLUME_UOM": {
+              "ui": {
+                "type": "text"
+              },
+              "type": "string",
+              "value": ""
+            }
+          }
+        },
+        "EXCLUDES": {
+          "ui": {
+            "hint": "if this ingredient is used, dither the following keynames"
+          },
+          "type": "array",
+          "value": {
+            "keyname": ""
+          }
+        }
+      }
+    },
+    "FLEX": {
+      "type": "array",
+      "value": {
+        "NAME": "",
+        "VALUE": "",
+        "CONFIG_COMMENT": {
+          "ui": {
+            "label": "Config_Comment",
+            "type": "text",
+            "hint": "Optional comment (is not displayed)"
+          }
+        },
+        "ALT_VALUE": {
+          "ui": {
+            "hint": "conditional overrides"
+          },
+          "type": "array",
+          "value": {
+            "CHECKTYPE": {
+              "ui": {
+                "label": "Check if",
+                "type": "select",
+                "options": [
+                  {
+                    "name": "Facility",
+                    "value": "Facility"
+                  }
+                ]
+              },
+              "type": "string",
+              "value": "Facility"
+            },
+            "CHECKMATCH": {
+              "ui": {
+                "label": "is equal to",
+                "type": "text",
+                "hint": "This value must match facility display from codeset 220"
+              },
+              "type": "string",
+              "value": ""
+            },
+            "OVERRIDE_VALUE": {
+              "ui": {
+                "label": "then FLEX setting gets this value instead",
+                "type": "text",
+                "hint": "Override FLEX setting with this value"
+              },
+              "type": "string",
+              "value": ""
+            }
+          }
+        }
+      }
+    }
+  }
+}

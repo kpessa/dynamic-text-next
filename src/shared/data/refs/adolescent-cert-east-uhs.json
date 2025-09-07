@@ -1,0 +1,2452 @@
+{
+  "INGREDIENT": [
+    {
+      "KEYNAME": "TPNVolume",
+      "EDITMODE": "None",
+      "DISPLAY": "Volume",
+      "UOM_DISP": "mL/kg/day",
+      "NOTE": [
+        {
+          "TEXT": "&nbsp;"
+        },
+        {
+          "TEXT": "[f( var rv=''; var WT=parseFloat(me.getValue('DoseWeightKG'));"
+        },
+        {
+          "TEXT": "if( WT === 0 ){ rv='Enter a weight'; }"
+        },
+        {
+          "TEXT": "else if( WT<10 ){  "
+        },
+        {
+          "TEXT": " rv+='<u>Holliday-Segar Maintenance Fluid Calculation</u>\\n'"
+        },
+        {
+          "TEXT": "rv+='under 10kg: 100 mL/kg/day'; }"
+        },
+        {
+          "TEXT": "else if (WT<= 65) {"
+        },
+        {
+          "TEXT": "rv+='<u>Holliday-Segar Maintenance Fluid Calculation</u>\\n'"
+        },
+        {
+          "TEXT": "  var BV = (WT<20) ? 1000 : 1500 ; /* base volume */"
+        },
+        {
+          "TEXT": " var PKG = (WT<20) ? 50 : 20 ; /* per kilogram volume */"
+        },
+        {
+          "TEXT": " var WTRangeStart = (WT<20) ? 10 : 20 ; /* weight range start */"
+        },
+        {
+          "TEXT": "  var WTDIF = me.maxP(WT - WTRangeStart,2); /* kg over min for this weight range */"
+        },
+        {
+          "TEXT": "  var TV = me.maxP(BV + ( WTDIF * PKG ),2); /* total volume */"
+        },
+        {
+          "TEXT": "  var ENTRY = me.maxP(TV / WT,2); /* recommended entry */"
+        },
+        {
+          "TEXT": "  rv+=BV+'mL+('+WTDIF+'kg*'+PKG+'mL/kg)='+TV"
+        },
+        {
+          "TEXT": "  +'mL/day&divide;'+WT+'kg= '+ENTRY+'mL/kg/day';"
+        },
+        {
+          "TEXT": "}"
+        },
+        {
+          "TEXT": "else if(WT>65) { "
+        },
+        {
+          "TEXT": "rv+='<u>Maintenance fluid requirement</u>\\n2400 mL/day = ' + me.maxP(2400 / WT,2) + ' mL/kg/day'"
+        },
+        {
+          "TEXT": "}"
+        },
+        {
+          "TEXT": "return rv; )]"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "rate",
+          "UOM_DISP": "mL/hr"
+        },
+        {
+          "NAME": "tvol",
+          "UOM_DISP": "mL/day"
+        }
+      ],
+      "LABS": [],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 100
+        }
+      ],
+      "TYPE": "Diluent",
+      "MNEMONIC": "Parenteral Nutrition Total Volume",
+      "PRECISION": 2,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0,
+        "STRENGTH_UOM": "",
+        "VOLUME": 0,
+        "VOLUME_UOM": ""
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Fat",
+      "EDITMODE": "None",
+      "DISPLAY": "Fat",
+      "UOM_DISP": "gm/kg/day",
+      "NOTE": [
+        {
+          "TEXT": "Initial: 1 gm/kg/day"
+        },
+        {
+          "TEXT": "Daily Increase: 1 gm/kg/day"
+        },
+        {
+          "TEXT": "Goal: 1 - 2 gm/kg/day"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "gmd",
+          "UOM_DISP": "gm/day"
+        },
+        {
+          "NAME": "kcd",
+          "UOM_DISP": "Kcal/day"
+        }
+      ],
+      "LABS": [
+        {
+          "DISPLAY": "Triglycerides",
+          "EVENT_SET_NAME": "TPN Fat Triglycerides",
+          "GRAPH": 1
+        }
+      ],
+      "OSMO_RATIO": 1.3,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 2.5
+        },
+        {
+          "THRESHOLD": "Critical High",
+          "VALUE": 2.6
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 4
+        }
+      ],
+      "TYPE": "Macronutrient",
+      "MNEMONIC": "Fat Emulsion TPN additive",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0.2,
+        "STRENGTH_UOM": "gm",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Protein",
+      "EDITMODE": "Custom",
+      "DISPLAY": "Protein",
+      "UOM_DISP": "gm/kg/day",
+      "NOTE": [
+        {
+          "TEXT": "Initial: 0.8 - 2 gm/kg/day"
+        },
+        {
+          "TEXT": "Goal: 0.8 - 2 gm/kg/day"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "gmd",
+          "UOM_DISP": "gm/day"
+        },
+        {
+          "NAME": "kcd",
+          "UOM_DISP": "Kcal/day"
+        }
+      ],
+      "LABS": [
+        {
+          "DISPLAY": "Serum Pre-albumin",
+          "EVENT_SET_NAME": "TPN Protein Serum PreAlbumin",
+          "GRAPH": 1
+        },
+        {
+          "DISPLAY": "Serum Albumin",
+          "EVENT_SET_NAME": "TPN Protein Serum Albumin",
+          "GRAPH": 1
+        }
+      ],
+      "OSMO_RATIO": 9.1867,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 2
+        },
+        {
+          "THRESHOLD": "Critical High",
+          "VALUE": 2.1
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 6
+        }
+      ],
+      "TYPE": "Macronutrient",
+      "MNEMONIC": "Amino Acids (protein) TPN additive (PED/NEO)",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0.1,
+        "STRENGTH_UOM": "gm",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Carbohydrates",
+      "EDITMODE": "Custom",
+      "DISPLAY": "Carbohydrates",
+      "UOM_DISP": "gm/kg/day",
+      "NOTE": [
+        {
+          "TEXT": "Initial: 3.6 - 4.3 gm/kg/day (GIR: 2.5 - 3 mg/kg/min)"
+        },
+        {
+          "TEXT": "Daily Increase: 1.5 - 3 gm/kg/day (GIR: 1 - 2 mg/kg/min)"
+        },
+        {
+          "TEXT": "Goal: 7.3 - 8.6 gm/kg/day (GIR: 5- 6 mg/kg/min)"
+        },
+        {
+          "TEXT": "&nbsp;"
+        },
+        {
+          "TEXT": "[f( var rv=\"\"; var DWKG=me.getValue('DoseWeightKG');"
+        },
+        {
+          "TEXT": "var vol = ( me.getValue('admixture')==='2:1' ? me.getValue('NonLipidVolume') : me.getValue('TotalVolume') );"
+        },
+        {
+          "TEXT": "var vol = ( me.getValue('admixture')==='2:1' ? me.getValue('NonLipidVolume') : me.getValue('TotalVolume') );"
+        },
+        {
+          "TEXT": "rv = 'Dextrose 10% solution needs: ' + me.maxP( vol * 0.10 / DWKG, 3 ) + ' gm/kg/day'"
+        },
+        {
+          "TEXT": "return (rv||''); )]"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "gmd",
+          "UOM_DISP": "gm/day"
+        },
+        {
+          "NAME": "kcd",
+          "UOM_DISP": "Kcal/day"
+        },
+        {
+          "NAME": "gmpcnt",
+          "UOM_DISP": "% dextrose (est.)"
+        },
+        {
+          "NAME": "mgkgmin",
+          "UOM_DISP": "mg/kg/min"
+        }
+      ],
+      "LABS": [
+        {
+          "DISPLAY": "Glucose",
+          "EVENT_SET_NAME": "TPN Carbohydrates Serum Glucose",
+          "GRAPH": 1
+        }
+      ],
+      "OSMO_RATIO": 5.04,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 8.6
+        },
+        {
+          "THRESHOLD": "Critical High",
+          "VALUE": 10
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 20
+        }
+      ],
+      "TYPE": "Macronutrient",
+      "MNEMONIC": "Dextrose (carbohydrate) TPN additive",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0.7,
+        "STRENGTH_UOM": "gm",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Energy",
+      "EDITMODE": "None",
+      "DISPLAY": "Energy (Kcal/day)",
+      "UOM_DISP": "Kcal/kg/day",
+      "NOTE": [
+        {
+          "TEXT": "Greater than or equal to 7 to 12 years – 50 to 75 kcal/kg/day"
+        },
+        {
+          "TEXT": "Greater than or equal to 12 to 18 years – 30 to 50 kcal/kg/day "
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [],
+      "TYPE": "Other",
+      "MNEMONIC": "",
+      "PRECISION": 0,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0,
+        "STRENGTH_UOM": "",
+        "VOLUME": 0,
+        "VOLUME_UOM": ""
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Potassium",
+      "EDITMODE": "Custom",
+      "DISPLAY": "Potassium",
+      "UOM_DISP": "mEq/kg/day",
+      "NOTE": [
+        {
+          "TEXT": "1 - 2 mEq/kg/day"
+        },
+        {
+          "TEXT": "Maximum: 200 mEq/day"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "total",
+          "UOM_DISP": "mEq/day"
+        }
+      ],
+      "LABS": [
+        {
+          "DISPLAY": "Serum Potassium",
+          "EVENT_SET_NAME": "TPN Potassium Serum Potassium",
+          "GRAPH": 1
+        }
+      ],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 2
+        },
+        {
+          "THRESHOLD": "Critical High",
+          "VALUE": 4
+        }
+      ],
+      "TYPE": "Micronutrient",
+      "MNEMONIC": "",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0,
+        "STRENGTH_UOM": "",
+        "VOLUME": 0,
+        "VOLUME_UOM": ""
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Sodium",
+      "EDITMODE": "Custom",
+      "DISPLAY": "Sodium",
+      "UOM_DISP": "mEq/kg/day",
+      "NOTE": [
+        {
+          "TEXT": "[f( var rv=''; "
+        },
+        {
+          "TEXT": "var AGEDAYS=parseFloat(me.data.RREC.PATIENTINFO.AGEDAYS)"
+        },
+        {
+          "TEXT": "if (AGEDAYS < (14*364.25)){rv='Daily Maximum: 360 mEq/day'}"
+        },
+        {
+          "TEXT": "else "
+        },
+        {
+          "TEXT": "if (AGEDAYS >= (14*364.25)){rv='Daily Maximum: 160 mEq/day'}"
+        },
+        {
+          "TEXT": "else "
+        },
+        {
+          "TEXT": "{  rv = 'Daily maximum: 360 mEq/day '"
+        },
+        {
+          "TEXT": "} "
+        },
+        {
+          "TEXT": "return rv; )]"
+        },
+        {
+          "TEXT": "1 - 2 mEq/kg/day"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "total",
+          "UOM_DISP": "mEq/day"
+        }
+      ],
+      "LABS": [
+        {
+          "DISPLAY": "Serum Sodium",
+          "EVENT_SET_NAME": "TPN Sodium Serum Sodium",
+          "GRAPH": 1
+        }
+      ],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 2
+        },
+        {
+          "THRESHOLD": "Critical High",
+          "VALUE": 4
+        }
+      ],
+      "TYPE": "Micronutrient",
+      "MNEMONIC": "",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0,
+        "STRENGTH_UOM": "",
+        "VOLUME": 0,
+        "VOLUME_UOM": ""
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Calcium",
+      "EDITMODE": "Custom",
+      "DISPLAY": "Calcium",
+      "UOM_DISP": "mEq/day",
+      "NOTE": [
+        {
+          "TEXT": "10 - 20 mEq/day"
+        },
+        {
+          "TEXT": "[f( var VALUE = me.getValue('Calcium'); var msg='';"
+        },
+        {
+          "TEXT": "if(VALUE != 0 && VALUE < 4) {"
+        },
+        {
+          "TEXT": " msg += '<b style=\"color:red;\">**Low Calcium specified, please evaluate appropriateness**'"
+        },
+        {
+          "TEXT": "} "
+        },
+        {
+          "TEXT": "  return msg; )]"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [
+        {
+          "DISPLAY": "Serum Calcium",
+          "EVENT_SET_NAME": "TPN Calcium Serum Calcium",
+          "GRAPH": 1
+        },
+        {
+          "DISPLAY": "Ionized Calcium",
+          "EVENT_SET_NAME": "TPN Calcium Ionized",
+          "GRAPH": 1
+        }
+      ],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 20
+        },
+        {
+          "THRESHOLD": "Critical High",
+          "VALUE": 30
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 60
+        }
+      ],
+      "TYPE": "Micronutrient",
+      "MNEMONIC": "",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0,
+        "STRENGTH_UOM": "",
+        "VOLUME": 0,
+        "VOLUME_UOM": ""
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Magnesium",
+      "EDITMODE": "Custom",
+      "DISPLAY": "Magnesium",
+      "UOM_DISP": "mEq/day",
+      "NOTE": [
+        {
+          "TEXT": "10 - 30 mEq/day"
+        },
+        {
+          "TEXT": "[f( var VALUE = me.getValue('Magnesium'); var msg='';"
+        },
+        {
+          "TEXT": "if(VALUE != 0 && VALUE < 4) {"
+        },
+        {
+          "TEXT": " msg += '<b style=\"color:red;\">**Low Magnesium specified, please evaluate appropriateness**'"
+        },
+        {
+          "TEXT": "}"
+        },
+        {
+          "TEXT": "  return msg; )]"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [
+        {
+          "DISPLAY": "Serum Magnesium",
+          "EVENT_SET_NAME": "TPN Magnesium Serum Magnesium",
+          "GRAPH": 1
+        }
+      ],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 30
+        },
+        {
+          "THRESHOLD": "Critical High",
+          "VALUE": 40
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 60
+        }
+      ],
+      "TYPE": "Micronutrient",
+      "MNEMONIC": "",
+      "PRECISION": 2,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0,
+        "STRENGTH_UOM": "",
+        "VOLUME": 0,
+        "VOLUME_UOM": ""
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Phosphate",
+      "EDITMODE": "Custom",
+      "DISPLAY": "Phosphate",
+      "UOM_DISP": "mmol/day",
+      "NOTE": [
+        {
+          "TEXT": "10 - 40 mmol/day"
+        },
+        {
+          "TEXT": "[f( var VALUE = me.getValue('Phosphate'); var msg='';"
+        },
+        {
+          "TEXT": "if(VALUE != 0 && VALUE < 4) {"
+        },
+        {
+          "TEXT": "  msg += '<b style=\"color:red;\">**Low Phosphate specified, please evaluate appropriateness**'"
+        },
+        {
+          "TEXT": "}"
+        },
+        {
+          "TEXT": "  return msg; )]"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [
+        {
+          "DISPLAY": "Serum Phosphate",
+          "EVENT_SET_NAME": "TPN Phosphate Serum Phosphate",
+          "GRAPH": 1
+        }
+      ],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 40
+        },
+        {
+          "THRESHOLD": "Critical High",
+          "VALUE": 40.1
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 80
+        }
+      ],
+      "TYPE": "Micronutrient",
+      "MNEMONIC": "",
+      "PRECISION": 2,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0,
+        "STRENGTH_UOM": "",
+        "VOLUME": 0,
+        "VOLUME_UOM": ""
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Chloride",
+      "EDITMODE": "Custom",
+      "DISPLAY": "Chloride",
+      "UOM_DISP": "mEq/kg/day",
+      "NOTE": [
+        {
+          "TEXT": "As needed"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "total",
+          "UOM_DISP": "mEq/day"
+        }
+      ],
+      "LABS": [
+        {
+          "DISPLAY": "Serum Chloride",
+          "EVENT_SET_NAME": "TPN Chloride Serum Chloride",
+          "GRAPH": 1
+        }
+      ],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal Low",
+          "VALUE": 80
+        },
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 150
+        },
+        {
+          "THRESHOLD": "Critical High",
+          "VALUE": 160
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 200
+        }
+      ],
+      "TYPE": "Micronutrient",
+      "MNEMONIC": "",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0,
+        "STRENGTH_UOM": "",
+        "VOLUME": 0,
+        "VOLUME_UOM": ""
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Acetate",
+      "EDITMODE": "Custom",
+      "DISPLAY": "Acetate",
+      "UOM_DISP": "mEq/kg/day",
+      "NOTE": [
+        {
+          "TEXT": "As Needed"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "total",
+          "UOM_DISP": "mEq/day"
+        }
+      ],
+      "LABS": [
+        {
+          "DISPLAY": "Serum Bicarbonate",
+          "EVENT_SET_NAME": "TPN Acetate Serum Bicarbonate",
+          "GRAPH": 1
+        },
+        {
+          "DISPLAY": "PH",
+          "EVENT_SET_NAME": "TPN PH",
+          "GRAPH": 1
+        }
+      ],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [],
+      "TYPE": "Micronutrient",
+      "MNEMONIC": "",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0,
+        "STRENGTH_UOM": "",
+        "VOLUME": 0,
+        "VOLUME_UOM": ""
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "PotassiumChloride",
+      "EDITMODE": "",
+      "DISPLAY": "",
+      "UOM_DISP": "mEq",
+      "NOTE": [],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 2,
+      "REFERENCE_RANGE": [],
+      "TYPE": "Salt",
+      "MNEMONIC": "potassium chloride TPN additive",
+      "PRECISION": 2,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 2,
+        "STRENGTH_UOM": "mEq",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "PotassiumAcetate",
+      "EDITMODE": "",
+      "DISPLAY": "",
+      "UOM_DISP": "mEq",
+      "NOTE": [],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 2,
+      "REFERENCE_RANGE": [],
+      "TYPE": "Salt",
+      "MNEMONIC": "potassium acetate TPN additive",
+      "PRECISION": 2,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 2,
+        "STRENGTH_UOM": "mEq",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "PotassiumPhosphate",
+      "EDITMODE": "",
+      "DISPLAY": "",
+      "UOM_DISP": "mmol",
+      "NOTE": [],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 2.467,
+      "REFERENCE_RANGE": [],
+      "TYPE": "Salt",
+      "MNEMONIC": "potassium phosphate TPN additive (mMol)",
+      "PRECISION": 2,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 3,
+        "STRENGTH_UOM": "mmol",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "SodiumChloride",
+      "EDITMODE": "",
+      "DISPLAY": "",
+      "UOM_DISP": "mEq",
+      "NOTE": [],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 2,
+      "REFERENCE_RANGE": [],
+      "TYPE": "Salt",
+      "MNEMONIC": "sodium chloride TPN additive",
+      "PRECISION": 2,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 4,
+        "STRENGTH_UOM": "mEq",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "SodiumAcetate",
+      "EDITMODE": "",
+      "DISPLAY": "",
+      "UOM_DISP": "mEq",
+      "NOTE": [],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 2,
+      "REFERENCE_RANGE": [],
+      "TYPE": "Salt",
+      "MNEMONIC": "sodium acetate TPN additive",
+      "PRECISION": 2,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 2,
+        "STRENGTH_UOM": "mEq",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "SodiumPhosphate",
+      "EDITMODE": "",
+      "DISPLAY": "",
+      "UOM_DISP": "mmol",
+      "NOTE": [],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 2.467,
+      "REFERENCE_RANGE": [],
+      "TYPE": "Salt",
+      "MNEMONIC": "sodium phosphate PN additive (mMol)",
+      "PRECISION": 2,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 3,
+        "STRENGTH_UOM": "mmol",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "CalciumGluconate",
+      "EDITMODE": "",
+      "DISPLAY": "",
+      "UOM_DISP": "mEq",
+      "NOTE": [],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 1.478,
+      "REFERENCE_RANGE": [],
+      "TYPE": "Salt",
+      "MNEMONIC": "calcium gluconate PN additive",
+      "PRECISION": 2,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0.465,
+        "STRENGTH_UOM": "mEq",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "MagnesiumSulfate",
+      "EDITMODE": "",
+      "DISPLAY": "",
+      "UOM_DISP": "mEq",
+      "NOTE": [],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 1,
+      "REFERENCE_RANGE": [],
+      "TYPE": "Salt",
+      "MNEMONIC": "magnesium sulfate additve (mEq)",
+      "PRECISION": 2,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 4,
+        "STRENGTH_UOM": "mEq",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "MultiVitamin",
+      "EDITMODE": "None",
+      "DISPLAY": "MultiVitamin",
+      "UOM_DISP": "mL/day",
+      "NOTE": [
+        {
+          "TEXT": "*Adult MVI Injection*"
+        },
+        {
+          "TEXT": "Maximum Dose: 10 mL/day"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "tvol",
+          "UOM_DISP": "mL/day"
+        }
+      ],
+      "LABS": [],
+      "OSMO_RATIO": 4.11,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 10
+        }
+      ],
+      "TYPE": "Additive",
+      "MNEMONIC": "Multiple vitamins PN PEDIATRIC additive",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 1,
+        "STRENGTH_UOM": "mL",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "TraceElements",
+      "EDITMODE": "None",
+      "DISPLAY": "Trace Elements",
+      "UOM_DISP": "mL/day",
+      "NOTE": [
+        {
+          "TEXT": "3 mL/day"
+        },
+        {
+          "TEXT": "3 mL: Chromium 3 mcg, Copper 0.3 mg, Manganese 75 mcg, Zinc 3mg"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 3
+        }
+      ],
+      "TYPE": "Additive",
+      "MNEMONIC": "Trace elements additive (NEOtrace)",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 1,
+        "STRENGTH_UOM": "mL",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": [
+        {
+          "keyname": "Copper"
+        },
+        {
+          "keyname": "Chromium"
+        },
+        {
+          "keyname": "Manganese"
+        },
+        {
+          "keyname": "ZincSulfate"
+        },
+        {
+          "keyname": "Trace4"
+        },
+        {
+          "keyname": "Trace4C"
+        },
+        {
+          "keyname": "Trace5"
+        },
+        {
+          "keyname": "Trace5C"
+        },
+        {
+          "keyname": ""
+        }
+      ]
+    },
+    {
+      "KEYNAME": "Trace4",
+      "DISPLAY": "Trace Elements",
+      "UOM_DISP": "mL/day",
+      "OSMO_RATIO": 0,
+      "EDITMODE": "None",
+      "NOTE": [
+        {
+          "TEXT": "> 50 kg: 3 mL/day"
+        },
+        {
+          "TEXT": "3 mL: Chromium 12 mcg, Copper 1.2 mg, Manganese 0.3 mg, Zinc 3 mg"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [],
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 3
+        }
+      ],
+      "TYPE": "Other",
+      "MNEMONIC": "Trace elements additive (PEDItrace)",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 1,
+        "STRENGTH_UOM": "mL",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": [
+        {
+          "keyname": "Trace5"
+        },
+        {
+          "keyname": "Trace4C"
+        },
+        {
+          "keyname": "Trace5C"
+        },
+        {
+          "keyname": "Copper"
+        },
+        {
+          "keyname": "Chromium"
+        },
+        {
+          "keyname": "Manganese"
+        },
+        {
+          "keyname": "ZincSulfate"
+        },
+        {
+          "keyname": "TraceElements"
+        }
+      ]
+    },
+    {
+      "KEYNAME": "Trace4C",
+      "DISPLAY": "Trace Elements *Concentrate*",
+      "UOM_DISP": "mL/day",
+      "OSMO_RATIO": 0,
+      "EDITMODE": "None",
+      "NOTE": [
+        {
+          "TEXT": "> 50 kg: 1 mL/day"
+        },
+        {
+          "TEXT": "1 mL: Chromium 10 mcg, Copper 1mg, Manganese 0.5 mg, Zinc 5 mg"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [],
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 1
+        }
+      ],
+      "TYPE": "Other",
+      "MNEMONIC": "Trace elements-4 (Conc 1 mL) additive",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 1,
+        "STRENGTH_UOM": "mL",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": [
+        {
+          "keyname": "ZincSulfate"
+        },
+        {
+          "keyname": "Copper"
+        },
+        {
+          "keyname": "Chromium"
+        },
+        {
+          "keyname": "Manganese"
+        },
+        {
+          "keyname": "Trace4"
+        },
+        {
+          "keyname": "Trace5C"
+        },
+        {
+          "keyname": "Trace5"
+        },
+        {
+          "keyname": "TraceElements"
+        }
+      ]
+    },
+    {
+      "KEYNAME": "Trace5",
+      "DISPLAY": "Trace Elements w/ Selenium",
+      "UOM_DISP": "mL/day",
+      "OSMO_RATIO": 0,
+      "EDITMODE": "None",
+      "NOTE": [
+        {
+          "TEXT": "> 50 kg: 3 mL/day"
+        },
+        {
+          "TEXT": "3 mL: Chromium 12mcg, Copper 1.2mg, Manganese 0.3mg, Selenium 60mcg, Zinc 3mg"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [],
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 3
+        }
+      ],
+      "TYPE": "Other",
+      "MNEMONIC": "Trace elements w/selenium (3 mL) additive",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 1,
+        "STRENGTH_UOM": "mL",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": [
+        {
+          "keyname": "Selenium"
+        },
+        {
+          "keyname": "ZincSulfate"
+        },
+        {
+          "keyname": "Copper"
+        },
+        {
+          "keyname": "Chromium"
+        },
+        {
+          "keyname": "Manganese"
+        },
+        {
+          "keyname": "Trace4"
+        },
+        {
+          "keyname": "Trace4C"
+        },
+        {
+          "keyname": "Trace5C"
+        },
+        {
+          "keyname": "TraceElements"
+        },
+        {
+          "keyname": ""
+        }
+      ]
+    },
+    {
+      "KEYNAME": "Trace5C",
+      "DISPLAY": "Trace Elements w/ Selenium *Concentrate*",
+      "UOM_DISP": "mL/day",
+      "OSMO_RATIO": 0,
+      "EDITMODE": "None",
+      "NOTE": [
+        {
+          "TEXT": "> 50 kg: 1 mL/day"
+        },
+        {
+          "TEXT": "1 mL: Chromium 10 mcg, Copper 1mg, Manganese 0.5mg, Selenium 60 mcg, Zinc 5 mg"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [],
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 1
+        }
+      ],
+      "TYPE": "Other",
+      "MNEMONIC": "Trace elements w/selenium (Conc 1 mL) additive",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 1,
+        "STRENGTH_UOM": "mL",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": [
+        {
+          "keyname": "Selenium"
+        },
+        {
+          "keyname": "Copper"
+        },
+        {
+          "keyname": "Chromium"
+        },
+        {
+          "keyname": "Manganese"
+        },
+        {
+          "keyname": "ZincSulfate"
+        },
+        {
+          "keyname": "Trace4"
+        },
+        {
+          "keyname": "Trace4C"
+        },
+        {
+          "keyname": "Trace5"
+        },
+        {
+          "keyname": "TraceElements"
+        }
+      ]
+    },
+    {
+      "KEYNAME": "Tralement",
+      "DISPLAY": "Trace Elements (Tralement)",
+      "MNEMONIC": "Tralement trace elements additive",
+      "UOM_DISP": "mL/day",
+      "TYPE": "Additive",
+      "OSMO_RATIO": 0,
+      "EDITMODE": "None",
+      "PRECISION": 1,
+      "SPECIAL": "volume",
+      "NOTE": [
+        {
+          "TEXT": "1 mL= Zinc:3000 mcg Copper:300 mcg Manganese:55 mcg Selenium:60 mcg)"
+        },
+        {
+          "TEXT": ""
+        },
+        {
+          "TEXT": "[f( var rv = ''; var msg = ''; var extraWarn=''; var WT=me.getValue('DoseWeightKG');"
+        },
+        {
+          "TEXT": "if(WT<10){msg='Not indicated for this patient&rsquo;s weight, please dose trace elements individually'; extraWarn=(me.getValue('TraceElements')>0?' style=\"color:red;\"':''); }"
+        },
+        {
+          "TEXT": "else { msg = 'Recommended Tralement Dosing: ';"
+        },
+        {
+          "TEXT": "if(WT>=10 && WT<20){msg+=' for 10 - 19 kg: 0.2 mL';};"
+        },
+        {
+          "TEXT": "if(WT>=20 && WT<30){msg+=' for 20 - 29 kg: 0.4 mL';};"
+        },
+        {
+          "TEXT": "if(WT>=30 && WT<40){msg+=' for 30 - 39 kg: 0.6 mL';};"
+        },
+        {
+          "TEXT": "if(WT>=40 && WT<50){msg+=' for 40 - 49 kg: 0.8 mL';};"
+        },
+        {
+          "TEXT": "if(WT>=50){msg+=' for greater than or equal to 50 kg: 1 mL';};"
+        },
+        {
+          "TEXT": "}"
+        },
+        {
+          "TEXT": "rv = '<span' + extraWarn + '>' + msg + '</span>';"
+        },
+        {
+          "TEXT": "return rv; )]"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "tvol",
+          "UOM_DISP": "mL/day"
+        }
+      ],
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 1
+        }
+      ],
+      "LABS": [],
+      "CONCENTRATION": {
+        "STRENGTH": 1,
+        "STRENGTH_UOM": "mL",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": [
+        {
+          "keyname": "Copper"
+        },
+        {
+          "keyname": "Manganese"
+        },
+        {
+          "keyname": "ZincSulfate"
+        },
+        {
+          "keyname": "Trace4"
+        },
+        {
+          "keyname": "Trace4C"
+        },
+        {
+          "keyname": "Trace5"
+        },
+        {
+          "keyname": "Trace5C"
+        },
+        {
+          "keyname": "ZincChloride"
+        },
+        {
+          "keyname": "Selenium"
+        }
+      ]
+    },
+    {
+      "KEYNAME": "Copper",
+      "DISPLAY": "Copper",
+      "MNEMONIC": "copper chloride TPN additive",
+      "UOM_DISP": "mcg/day",
+      "TYPE": "Additive",
+      "OSMO_RATIO": 0.0012232,
+      "EDITMODE": "None",
+      "NOTE": [
+        {
+          "TEXT": "[f( var rv=''; "
+        },
+        {
+          "TEXT": "var WT=parseFloat(me.getValue('DoseWeightKG'))"
+        },
+        {
+          "TEXT": "if (WT ===0){rv='Enter a Weight'}"
+        },
+        {
+          "TEXT": "else "
+        },
+        {
+          "TEXT": "if( WT >= 40 ){ rv = '200 - 500 mcg/day'} "
+        },
+        {
+          "TEXT": "else "
+        },
+        {
+          "TEXT": "{  rv =  ' Daily Dose: '"
+        },
+        {
+          "TEXT": "+ (me.maxP(WT*5, 3)) "
+        },
+        {
+          "TEXT": "+ ' - '  "
+        },
+        {
+          "TEXT": "+ (me.maxP(WT*20, 3 ))"
+        },
+        {
+          "TEXT": "+ 'mcg/day \\n'"
+        },
+        {
+          "TEXT": "+ 'Weight-Based Dose: 5 - 20 mcg/kg/day'"
+        },
+        {
+          "TEXT": "}"
+        },
+        {
+          "TEXT": "return rv; )]"
+        }
+      ],
+      "ALTUOM": [],
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 500
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 1500
+        }
+      ],
+      "LABS": [],
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 400,
+        "STRENGTH_UOM": "mcg",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": [
+        {
+          "keyname": "Multrys"
+        }
+      ]
+    },
+    {
+      "KEYNAME": "Chromium",
+      "DISPLAY": "Chromium",
+      "MNEMONIC": "chromium TPN additive",
+      "UOM_DISP": "mcg/day",
+      "TYPE": "Additive",
+      "OSMO_RATIO": 0,
+      "EDITMODE": "None",
+      "NOTE": [
+        {
+          "TEXT": "[f( var rv=''; "
+        },
+        {
+          "TEXT": "var WT=parseFloat(me.getValue('DoseWeightKG'))"
+        },
+        {
+          "TEXT": "if (WT ===0){rv='Enter a Weight'}"
+        },
+        {
+          "TEXT": "else "
+        },
+        {
+          "TEXT": "if( WT >= 40 ){ rv = '5 - 15 mcg/day'} "
+        },
+        {
+          "TEXT": "else "
+        },
+        {
+          "TEXT": "{  rv =  ' Daily Dose: '"
+        },
+        {
+          "TEXT": "+ (me.maxP(WT*0.14, 3)) "
+        },
+        {
+          "TEXT": "+ ' - ' "
+        },
+        {
+          "TEXT": "+ (me.maxP(WT*0.2, 3 ))"
+        },
+        {
+          "TEXT": "+ 'mcg/day \\n'"
+        },
+        {
+          "TEXT": "+ 'Weight-Based Dose: 0.14 - 0.2 mcg/kg/day'"
+        },
+        {
+          "TEXT": "}"
+        },
+        {
+          "TEXT": "return rv; )]"
+        }
+      ],
+      "ALTUOM": [],
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 15
+        }
+      ],
+      "LABS": [],
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 4,
+        "STRENGTH_UOM": "mcg",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": [
+        {
+          "keyname": "Multrys"
+        }
+      ]
+    },
+    {
+      "KEYNAME": "Manganese",
+      "DISPLAY": "Manganese",
+      "MNEMONIC": "manganese TPN additive",
+      "UOM_DISP": "mcg/day",
+      "TYPE": "Additive",
+      "OSMO_RATIO": 0,
+      "EDITMODE": "None",
+      "NOTE": [
+        {
+          "TEXT": "[f( var rv=''; "
+        },
+        {
+          "TEXT": "var WT=parseFloat(me.getValue('DoseWeightKG'))"
+        },
+        {
+          "TEXT": "if (WT ===0){rv='Enter a Weight'}"
+        },
+        {
+          "TEXT": "else "
+        },
+        {
+          "TEXT": "if( WT >= 40 ){ rv = '40 - 100 mcg/day'} "
+        },
+        {
+          "TEXT": "else "
+        },
+        {
+          "TEXT": "{  rv = 'Weight-Based Maximum:'"
+        },
+        {
+          "TEXT": "+ (me.maxP(WT*1, 3)) "
+        },
+        {
+          "TEXT": "+ ' mcg/day \\n'"
+        },
+        {
+          "TEXT": "+ 'Daily Maximum: 1 mcg/kg/day'"
+        },
+        {
+          "TEXT": "}"
+        },
+        {
+          "TEXT": "return rv; )]"
+        }
+      ],
+      "ALTUOM": [],
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 100
+        },
+        {
+          "THRESHOLD": "Critical High",
+          "VALUE": 150
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 180
+        }
+      ],
+      "LABS": [],
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 100,
+        "STRENGTH_UOM": "mcg",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": [
+        {
+          "keyname": "Multrys"
+        }
+      ]
+    },
+    {
+      "KEYNAME": "Selenium",
+      "EDITMODE": "None",
+      "DISPLAY": "Selenium",
+      "UOM_DISP": "mcg/day",
+      "NOTE": [
+        {
+          "TEXT": "[f( var rv=''; "
+        },
+        {
+          "TEXT": "var WT=parseFloat(me.getValue('DoseWeightKG'))"
+        },
+        {
+          "TEXT": "if (WT ===0){rv='Enter a Weight'}"
+        },
+        {
+          "TEXT": "else "
+        },
+        {
+          "TEXT": "if( WT >= 40 ){ rv = '40 - 60 mcg/day'} "
+        },
+        {
+          "TEXT": "else "
+        },
+        {
+          "TEXT": "{  rv = 'Total Dose:'"
+        },
+        {
+          "TEXT": "+ (me.maxP(WT*1, 3))"
+        },
+        {
+          "TEXT": "+ ' - ' "
+        },
+        {
+          "TEXT": "+ (me.maxP(WT*2, 3 ))"
+        },
+        {
+          "TEXT": "+ ' mcg/day \\n'"
+        },
+        {
+          "TEXT": "+ 'Daily Range: 1 - 2 mcg/kg/day'"
+        },
+        {
+          "TEXT": "}"
+        },
+        {
+          "TEXT": "return rv; )]"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 0.000025,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 60
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 120
+        }
+      ],
+      "TYPE": "Additive",
+      "MNEMONIC": "Selenium TPN additive",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 4,
+        "STRENGTH_UOM": "mcg",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": [
+        {
+          "keyname": "Multrys"
+        }
+      ]
+    },
+    {
+      "KEYNAME": "ZincSulfate",
+      "EDITMODE": "None",
+      "DISPLAY": "Zinc Sulfate",
+      "UOM_DISP": "mg/day",
+      "NOTE": [
+        {
+          "TEXT": "[f( var rv=''; "
+        },
+        {
+          "TEXT": "var WT=parseFloat(me.getValue('DoseWeightKG'))"
+        },
+        {
+          "TEXT": "if (WT ===0){rv='Enter a Weight'}"
+        },
+        {
+          "TEXT": "else "
+        },
+        {
+          "TEXT": "if( WT >= 40 ){ rv = '0.4 - 5 mg/day'} "
+        },
+        {
+          "TEXT": "else "
+        },
+        {
+          "TEXT": "{  rv = 'Total Dose: '"
+        },
+        {
+          "TEXT": "+ (me.maxP(WT*0.05, 3))"
+        },
+        {
+          "TEXT": "+ ' - ' "
+        },
+        {
+          "TEXT": "+ (me.maxP(WT*0.125, 3 ))"
+        },
+        {
+          "TEXT": "+ ' mg/day \\n'"
+        },
+        {
+          "TEXT": "+ 'Weight-Based Range: 0.05 - 0.125 mg/kg/day'"
+        },
+        {
+          "TEXT": "}"
+        },
+        {
+          "TEXT": "return rv; )]"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 0.0306,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 5
+        }
+      ],
+      "TYPE": "Additive",
+      "MNEMONIC": "zinc sulfate PN additive",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 1,
+        "STRENGTH_UOM": "mg",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": [
+        {
+          "keyname": "Multrys"
+        }
+      ]
+    },
+    {
+      "KEYNAME": "VitaminK",
+      "EDITMODE": "None",
+      "DISPLAY": "Vitamin K",
+      "UOM_DISP": "mcg/day",
+      "NOTE": [
+        {
+          "TEXT": "200 mcg/day"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 0.04,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 200
+        },
+        {
+          "THRESHOLD": "Critical High",
+          "VALUE": 1000
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 5000
+        }
+      ],
+      "TYPE": "Additive",
+      "MNEMONIC": "Vitamin K additive",
+      "PRECISION": 0,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 10000,
+        "STRENGTH_UOM": "mcg",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Levocarnitine",
+      "EDITMODE": "None",
+      "DISPLAY": "Levocarnitine",
+      "UOM_DISP": "mg/kg/day",
+      "NOTE": [
+        {
+          "TEXT": "50 mg/kg/day"
+        },
+        {
+          "TEXT": "[f(var WT=me.getValue('DoseWeightKG');var LEVO=me.getValue('Levocarnitine');"
+        },
+        {
+          "TEXT": "if(LEVO < 4000){ "
+        },
+        {
+          "TEXT": "return 'Daily Maximum: 4,000 mg/day'"
+        },
+        {
+          "TEXT": "}"
+        },
+        {
+          "TEXT": "if(LEVO > 4000){ "
+        },
+        {
+          "TEXT": "return '<span style=color:red;font-weight:bold;>'"
+        },
+        {
+          "TEXT": "+ 'Exceeds daily max of 4,000 mg/day.  Daily max achieved at ' + (4000/WT).toFixed(0) + ' mg/kg/day.';"
+        },
+        {
+          "TEXT": "}"
+        },
+        {
+          "TEXT": "return '' )]"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "tvol",
+          "UOM_DISP": "mg/day"
+        }
+      ],
+      "LABS": [],
+      "OSMO_RATIO": 0.006203,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 100
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 300
+        }
+      ],
+      "TYPE": "Additive",
+      "MNEMONIC": "Levocarnitine PN additive",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 200,
+        "STRENGTH_UOM": "mg",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Insulin",
+      "EDITMODE": "None",
+      "DISPLAY": "Insulin, Regular",
+      "UOM_DISP": "units/kg/day",
+      "NOTE": [
+        {
+          "TEXT": "As Needed"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "tvol",
+          "UOM_DISP": "mg/day"
+        }
+      ],
+      "LABS": [],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 1
+        },
+        {
+          "THRESHOLD": "Critical High",
+          "VALUE": 2.4
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 2.5
+        }
+      ],
+      "TYPE": "Other",
+      "MNEMONIC": "insulin regular IV additive",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 100,
+        "STRENGTH_UOM": "unit",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Famotidine",
+      "DISPLAY": "Famotidine",
+      "MNEMONIC": "famotidine IV additive",
+      "UOM_DISP": "mg/day",
+      "TYPE": "Additive",
+      "OSMO_RATIO": 0,
+      "EDITMODE": "None",
+      "NOTE": [
+        {
+          "TEXT": "[f( var WT=me.getValue('DoseWeightKG');"
+        },
+        {
+          "TEXT": "var msg='';"
+        },
+        {
+          "TEXT": "if(WT < 20) {"
+        },
+        {
+          "TEXT": "  msg += '1 - 2 mg/kg/day'"
+        },
+        {
+          "TEXT": "  msg += ' = ' + WT + ' - ' + WT*2 + ' mg/day';"
+        },
+        {
+          "TEXT": "} else { "
+        },
+        {
+          "TEXT": "  msg += '20 - 40 mg/day';"
+        },
+        {
+          "TEXT": "};"
+        },
+        {
+          "TEXT": "return msg; )]"
+        },
+        {
+          "TEXT": "Maximum: 40 mg/DAY"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "tvol",
+          "UOM_DISP": "mg/day"
+        }
+      ],
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 40
+        }
+      ],
+      "LABS": [],
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 10,
+        "STRENGTH_UOM": "mg",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Ranitidine",
+      "EDITMODE": "None",
+      "DISPLAY": "Ranitidine",
+      "UOM_DISP": "mg/kg/day",
+      "NOTE": [
+        {
+          "TEXT": "2 - 4 mg/kg/day"
+        },
+        {
+          "TEXT": "Maximum: 200 mg/DAY"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "tvol",
+          "UOM_DISP": "mg/day"
+        }
+      ],
+      "LABS": [],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 5
+        }
+      ],
+      "TYPE": "Additive",
+      "MNEMONIC": "ranitidine IV additive",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 50,
+        "STRENGTH_UOM": "mg",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Heparin",
+      "EDITMODE": "None",
+      "DISPLAY": "Heparin",
+      "UOM_DISP": "units/mL",
+      "NOTE": [
+        {
+          "TEXT": "0.5 - 1 units/mL of non-Lipid Volume **"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 1
+        },
+        {
+          "THRESHOLD": "Critical High",
+          "VALUE": 1.1
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 1.5
+        }
+      ],
+      "TYPE": "Additive",
+      "MNEMONIC": "heparin PN additive",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 1000,
+        "STRENGTH_UOM": "unit",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "FolicAcid",
+      "EDITMODE": "None",
+      "DISPLAY": "Folic Acid",
+      "UOM_DISP": "mg/day",
+      "NOTE": [
+        {
+          "TEXT": "1 mg/day"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 0.04,
+      "REFERENCE_RANGE": [],
+      "TYPE": "Other",
+      "MNEMONIC": "",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0.2,
+        "STRENGTH_UOM": "mg",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Thiamine",
+      "EDITMODE": "None",
+      "DISPLAY": "",
+      "UOM_DISP": "mg/day",
+      "NOTE": [
+        {
+          "TEXT": "100 - 200 mg/day"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [],
+      "TYPE": "Other",
+      "MNEMONIC": "",
+      "PRECISION": 0,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 100,
+        "STRENGTH_UOM": "mg",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Pyridoxine",
+      "EDITMODE": "None",
+      "DISPLAY": "",
+      "UOM_DISP": "mg/day",
+      "NOTE": [
+        {
+          "TEXT": "100 - 500 mg/day"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [],
+      "TYPE": "Other",
+      "MNEMONIC": "",
+      "PRECISION": 0,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 100,
+        "STRENGTH_UOM": "mg",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "AscorbicAcid",
+      "EDITMODE": "None",
+      "DISPLAY": "Ascorbic Acid",
+      "UOM_DISP": "mg/day",
+      "NOTE": [
+        {
+          "TEXT": "10 - 50 mg/kg/day"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "tvol",
+          "UOM_DISP": "mg/day"
+        }
+      ],
+      "LABS": [],
+      "OSMO_RATIO": 0.01188,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal Low",
+          "VALUE": 10
+        },
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 50
+        },
+        {
+          "THRESHOLD": "Critical High",
+          "VALUE": 60
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 100
+        }
+      ],
+      "TYPE": "Other",
+      "MNEMONIC": "",
+      "PRECISION": 0,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 500,
+        "STRENGTH_UOM": "mg",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Water",
+      "EDITMODE": "None",
+      "DISPLAY": "Volume",
+      "UOM_DISP": "mL/kg/day",
+      "NOTE": [
+        {
+          "TEXT": "30 - 40 mL/kg/day"
+        },
+        {
+          "TEXT": "3:1 admixture requires a 1.5 L Volume to meet goals"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "rate",
+          "UOM_DISP": "mL/hr"
+        },
+        {
+          "NAME": "tvol",
+          "UOM_DISP": "mL/day"
+        }
+      ],
+      "LABS": [],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [],
+      "TYPE": "Diluent",
+      "MNEMONIC": "",
+      "PRECISION": 0,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0,
+        "STRENGTH_UOM": "",
+        "VOLUME": 0,
+        "VOLUME_UOM": ""
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "MixE",
+      "EDITMODE": "None",
+      "DISPLAY": "Volume",
+      "UOM_DISP": "mL/kg/day",
+      "NOTE": [
+        {
+          "TEXT": "30 - 40 mL/kg/day"
+        },
+        {
+          "TEXT": "3:1 admixture requires a 1.5 L Volume to meet goals"
+        }
+      ],
+      "ALTUOM": [
+        {
+          "NAME": "rate",
+          "UOM_DISP": "mL/hr"
+        },
+        {
+          "NAME": "tvol",
+          "UOM_DISP": "mL/day"
+        }
+      ],
+      "LABS": [],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [],
+      "TYPE": "Diluent",
+      "MNEMONIC": "",
+      "PRECISION": 0,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0,
+        "STRENGTH_UOM": "",
+        "VOLUME": 0,
+        "VOLUME_UOM": ""
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "Mix",
+      "EDITMODE": "None",
+      "DISPLAY": "Volume",
+      "UOM_DISP": "mL/kg/day",
+      "NOTE": [
+        {
+          "TEXT": "0.4 - 5 mg/day"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Normal Low",
+          "VALUE": 0.4
+        },
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 5
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 5.1
+        }
+      ],
+      "TYPE": "Diluent",
+      "MNEMONIC": "",
+      "PRECISION": 0,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 0,
+        "STRENGTH_UOM": "",
+        "VOLUME": 0,
+        "VOLUME_UOM": ""
+      },
+      "EXCLUDES": []
+    },
+    {
+      "KEYNAME": "ZincChloride",
+      "EDITMODE": "None",
+      "DISPLAY": "Zinc Chloride",
+      "UOM_DISP": "mg/day",
+      "NOTE": [
+        {
+          "TEXT": "Recommended to include for centrally administered TPN"
+        },
+        {
+          "TEXT": "0.5 - 1 unit/mL"
+        }
+      ],
+      "ALTUOM": [],
+      "LABS": [],
+      "OSMO_RATIO": 0,
+      "REFERENCE_RANGE": [
+        {
+          "THRESHOLD": "Critical Low",
+          "VALUE": 0.25
+        },
+        {
+          "THRESHOLD": "Normal Low",
+          "VALUE": 0.5
+        },
+        {
+          "THRESHOLD": "Normal High",
+          "VALUE": 1
+        },
+        {
+          "THRESHOLD": "Critical High",
+          "VALUE": 1.1
+        },
+        {
+          "THRESHOLD": "Feasible High",
+          "VALUE": 1.5
+        }
+      ],
+      "TYPE": "Other",
+      "MNEMONIC": "",
+      "PRECISION": 1,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": 1,
+        "STRENGTH_UOM": "mg",
+        "VOLUME": 1,
+        "VOLUME_UOM": "mL"
+      },
+      "EXCLUDES": [
+        {
+          "keyname": "Multrys"
+        }
+      ]
+    },
+    {
+      "KEYNAME": "Weight",
+      "DISPLAY": "TPN Dosing Weight",
+      "MNEMONIC": "doseweightkg",
+      "UOM_DISP": "kg",
+      "TYPE": "Other",
+      "OSMO_RATIO": 0,
+      "EDITMODE": "None",
+      "NOTE": [],
+      "ALTUOM": [],
+      "REFERENCE_RANGE": [],
+      "LABS": [
+        {
+          "DISPLAY": "Dosing Weight",
+          "EVENT_SET_NAME": "TPN Dosing Weight Kg",
+          "GRAPH": 1
+        },
+        {
+          "DISPLAY": "Daily Weight",
+          "EVENT_SET_NAME": "TPN Daily Weight Kg",
+          "GRAPH": 1
+        },
+        {
+          "DISPLAY": "Body Mass Index",
+          "EVENT_SET_NAME": "TPN BMI",
+          "GRAPH": 1
+        }
+      ],
+      "PRECISION": 0,
+      "SPECIAL": "",
+      "CONCENTRATION": {
+        "STRENGTH": null,
+        "STRENGTH_UOM": "",
+        "VOLUME": null,
+        "VOLUME_UOM": ""
+      },
+      "EXCLUDES": []
+    }
+  ],
+  "FLEX": [
+    {
+      "NAME": "pref_product_fat",
+      "VALUE": "TPN Fat emulsion 20%",
+      "CONFIG_COMMENT": "",
+      "ALT_VALUE": []
+    },
+    {
+      "NAME": "pref_product_protein",
+      "VALUE": "TPN Amino Acids 10% (FreAmine III)",
+      "CONFIG_COMMENT": "",
+      "ALT_VALUE": []
+    },
+    {
+      "NAME": "pref_salt_phosphate",
+      "VALUE": "Sodium",
+      "CONFIG_COMMENT": "",
+      "ALT_VALUE": []
+    },
+    {
+      "NAME": "PERIPHERAL_DEXTROSE_MAX_PERCENT",
+      "VALUE": "12.6",
+      "CONFIG_COMMENT": "",
+      "ALT_VALUE": []
+    },
+    {
+      "NAME": "PERIPHERAL_OSMOLARITY_MAXIMUM",
+      "VALUE": "900",
+      "CONFIG_COMMENT": "",
+      "ALT_VALUE": []
+    },
+    {
+      "NAME": "ModeProductMnemonic",
+      "VALUE": "TPN Custom Formula Adolescent",
+      "CONFIG_COMMENT": "Custom TPN product Virtual Viewed to the facility else Advisor is unavailable",
+      "ALT_VALUE": []
+    },
+    {
+      "NAME": "ADVISOR_TITLE",
+      "VALUE": "TPN Advisor Adolescent",
+      "CONFIG_COMMENT": "Display this title to user for context",
+      "ALT_VALUE": []
+    },
+    {
+      "NAME": "ON_NEWER_DOSE_WEIGHT",
+      "VALUE": "ASK",
+      "CONFIG_COMMENT": "",
+      "ALT_VALUE": []
+    },
+    {
+      "NAME": "TPN_WEIGHT_DISPLAY",
+      "VALUE": "NONE",
+      "CONFIG_COMMENT": "",
+      "ALT_VALUE": []
+    },
+    {
+      "NAME": "PRECIPITATION_THRESHOLD_PERIPHERAL",
+      "VALUE": "50",
+      "ALT_VALUE": []
+    },
+    {
+      "NAME": "PRECIPITATION_THRESHOLD_CENTRAL",
+      "VALUE": "50",
+      "ALT_VALUE": []
+    },
+    {
+      "NAME": "EXCLUDE_PREMIX",
+      "VALUE": "YES",
+      "ALT_VALUE": []
+    },
+    {
+      "NAME": "ADMIXTURE_DEFAULT",
+      "VALUE": "2:1",
+      "ALT_VALUE": [
+        {
+          "CHECKTYPE": "Facility",
+          "CHECKMATCH": "SHM Center",
+          "OVERRIDE_VALUE": "3:1"
+        }
+      ]
+    }
+  ]
+}

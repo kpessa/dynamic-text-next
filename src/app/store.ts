@@ -14,8 +14,11 @@ import storage from 'redux-persist/lib/storage'
 import authReducer from '@/features/auth/model/authSlice'
 import tpnReducer from '@/features/tpn-calculations/model/tpnSlice'
 import uiReducer from '@/features/ui/model/uiSlice'
+import navigationReducer from '@/features/ui/model/navigationSlice'
+import dashboardReducer from '@/features/dashboard/model/dashboardSlice'
 import firebaseReducer from '@/features/firebase/model/firebaseSlice'
 import importReducer from '@/features/data-import/model/importSlice'
+import configurationReducer from '@/features/data-import/model/configurationSlice'
 import simulationReducer from '@/entities/simulation/model/simulationSlice'
 import referenceReducer from '@/entities/reference/model/referenceSlice'
 import ingredientReducer from '@/entities/ingredient/model/ingredientSlice'
@@ -36,21 +39,32 @@ const authPersistConfig = {
   whitelist: ['user', 'isAuthenticated']
 }
 
+// Persist config for editor (session persistence)
+const editorPersistConfig = {
+  key: 'editor',
+  storage,
+  whitelist: ['sections', 'ingredients']
+}
+
 const persistedAuthReducer = persistReducer(authPersistConfig, authReducer)
+const persistedEditorReducer = persistReducer(editorPersistConfig, editorReducer)
 
 export const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
     tpn: tpnReducer,
     ui: uiReducer,
+    navigation: navigationReducer,
+    dashboard: dashboardReducer,
     firebase: firebaseReducer,
     import: importReducer,
+    configuration: configurationReducer,
     simulation: simulationReducer,
     reference: referenceReducer,
     ingredient: ingredientReducer,
     functions: functionsReducer,
     sections: sectionReducer,
-    editor: editorReducer,
+    editor: persistedEditorReducer,
     kpt: kptReducer,
     aiTest: aiTestReducer,
     version: versionReducer,

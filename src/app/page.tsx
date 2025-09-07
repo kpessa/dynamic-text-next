@@ -1,7 +1,7 @@
 'use client'
 
-import { HomePage } from '@/pages/home'
+import { EditorHomePage } from '@/pages/home'
 
 export default function Home() {
-  return <HomePage />
+  return <EditorHomePage />
 }

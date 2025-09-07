@@ -11,7 +11,7 @@ import {
   DocumentData,
   Timestamp
 } from 'firebase/firestore';
-import { db } from '@/shared/lib/firebase/config';
+import { db } from '@/shared/config/firebase';
 import { Version, VersionStorageInfo } from '@/entities/version';
 import { DiffEngine } from './diffEngine';
 import pako from 'pako';

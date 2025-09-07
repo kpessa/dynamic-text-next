@@ -148,3 +148,12 @@ export interface BulkOperationResult {
   failed: number
   errors?: Array<{ id: string; error: string }>
 }
+
+// Simplified ingredient type for dashboard display
+export interface SimpleIngredient {
+  id: string
+  name: string
+  category: string
+  lastModified: Date | string
+  isShared: boolean
+}

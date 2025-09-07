@@ -7,19 +7,36 @@ import React from 'react'
 import { Box, Container, Typography, Button, Paper } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import { HeaderWidget } from '@/widgets/header'
-import { useRouter } from 'next/navigation'
 import AddIcon from '@mui/icons-material/Add'
 import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 
 export const HomePage: React.FC = () => {
-  const router = useRouter()
+  // Safe router usage - only use in actual Next.js app, not in Storybook
+  let router: any = null
+  if (typeof window !== 'undefined' && !window.location.href.includes('storybook')) {
+    try {
+      const { useRouter } = require('next/navigation')
+      router = useRouter()
+    } catch (e) {
+      // In Storybook or other non-Next.js environments
+      console.log('Router not available')
+    }
+  }
 
   const handleNewDocument = () => {
-    router.push('/editor/new')
+    if (router) {
+      router.push('/editor/new')
+    } else {
+      console.log('Would navigate to /editor/new')
+    }
   }
 
   const handleOpenDocument = () => {
-    router.push('/editor')
+    if (router) {
+      router.push('/editor')
+    } else {
+      console.log('Would navigate to /editor')
+    }
   }
 
   return (
