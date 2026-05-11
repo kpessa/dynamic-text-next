@@ -104,6 +104,7 @@
     "eslint-config-next": "15.5.2",
     "eslint-plugin-boundaries": "^5.0.1",
     "eslint-plugin-storybook": "^9.1.4",
+    "firebase-admin": "^13.5.0",
     "firebase-functions": "^6.4.0",
     "happy-dom": "^18.0.1",
     "jsdom": "^26.1.0",

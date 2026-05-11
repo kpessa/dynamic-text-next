@@ -71,13 +71,20 @@ export class IngredientService extends FirestoreService<Ingredient> {
     return this.update(ingredientId, { isShared: false })
   }
 
+  // Create ingredient with keyname as ID
+  async createWithKeyname(ingredient: Omit<Ingredient, 'id'>): Promise<ServiceResult<Ingredient>> {
+    const id = ingredient.keyname.toLowerCase().replace(/[^a-z0-9_-]/g, '_')
+    return this.createWithId(id, ingredient)
+  }
+
   // Bulk create ingredients (useful for imports)
   async bulkCreate(ingredients: Omit<Ingredient, 'id'>[]): Promise<ServiceResult<Ingredient[]>> {
     try {
       const created: Ingredient[] = []
       
       for (const ingredient of ingredients) {
-        const result = await this.create(ingredient)
+        // Use keyname as ID for consistency
+        const result = await this.createWithKeyname(ingredient)
         if (result.data) {
           created.push(result.data)
         } else if (result.error) {

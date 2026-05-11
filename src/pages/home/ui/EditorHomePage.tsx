@@ -8,9 +8,10 @@ import { Box, IconButton, useTheme, useMediaQuery } from '@mui/material'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
 import { HeaderWidget } from '@/widgets/header'
-import { IngredientSidebar } from '@/widgets/ingredient-sidebar'
+import { IngredientSidebarWithVariants } from '@/widgets/ingredient-sidebar'
 import { EditorPanel } from '@/widgets/editor-panel'
 import { PreviewPanel } from '@/widgets/preview-panel'
+import { IngredientSectionEditorFeature } from '@/features/ingredient-management'
 
 export const EditorHomePage: React.FC = () => {
   const theme = useTheme()
@@ -70,7 +71,7 @@ export const EditorHomePage: React.FC = () => {
             zIndex: isMobile ? 1100 : 'auto'
           }}
         >
-          {sidebarOpen && <IngredientSidebar onClose={isMobile ? toggleSidebar : undefined} />}
+          {sidebarOpen && <IngredientSidebarWithVariants onClose={isMobile ? toggleSidebar : undefined} />}
         </Box>
 
         {/* Center - Editor */}
@@ -83,7 +84,7 @@ export const EditorHomePage: React.FC = () => {
             minWidth: 0 // Allow flex item to shrink below content size
           }}
         >
-          <EditorPanel />
+          <EditorPanel sectionEditorComponent={IngredientSectionEditorFeature} />
         </Box>
 
         {/* Right - Preview Panel */}

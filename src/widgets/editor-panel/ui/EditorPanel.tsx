@@ -1,169 +1,239 @@
 /**
  * Editor Panel Widget
- * Main editor area with section management
+ * Main content area for editing dynamic text
  */
 
-import React, { useCallback } from 'react'
-import {
-  Box,
-  Button,
-  Typography,
-  Paper,
-  Fab,
-  Zoom
-} from '@mui/material'
+import React, { useState, useEffect } from 'react'
+import { Box, Paper, Typography, Tab, Tabs, Fab, CircularProgress, Alert } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
-import { useAppSelector, useAppDispatch } from '@/app/hooks'
-import {
-  selectSections,
-  selectActiveSectionId,
-  addSection,
-  updateSection,
-  deleteSection,
-  reorderSections,
-  setActiveSection
-} from '@/features/editor/model/editorSlice'
-import { SectionEditor } from './SectionEditor'
-import { Section } from '@/shared/types/section'
+import type { ContentSection } from '@/entities/content'
+import { useSelector, useDispatch } from 'react-redux'
+import type { RootState } from '@/app/store'
+import { ingredientService } from '@/entities/ingredient/model/ingredientService'
+import type { Ingredient } from '@/entities/ingredient/types'
+import { 
+  selectSelectedIngredient, 
+  selectIsEditingSection,
+  updateSelectedIngredient 
+} from '@/shared/model/selectedIngredientModel'
 
-export const EditorPanel: React.FC = () => {
-  const dispatch = useAppDispatch()
-  const sections = useAppSelector(selectSections)
-  const activeSectionId = useAppSelector(selectActiveSectionId)
+interface EditorPanelProps {
+  sections?: ContentSection[]
+  activeSection?: string
+  onSectionChange?: (sectionId: string) => void
+  onAddSection?: () => void
+}
 
-  const handleAddSection = () => {
-    const newSection: Section = {
-      id: Date.now(),
-      type: 'static',
-      name: `Section ${sections.length + 1}`,
-      content: '',
-      testCases: []
+// Add prop for the section editor component
+interface ExtendedEditorPanelProps extends EditorPanelProps {
+  sectionEditorComponent?: React.ComponentType<{
+    ingredient: Ingredient
+    onSave?: (sections: any[]) => void
+    onCancel?: () => void
+  }>
+}
+
+export const EditorPanel: React.FC<ExtendedEditorPanelProps> = ({
+  sections = [],
+  activeSection,
+  onSectionChange,
+  onAddSection,
+  sectionEditorComponent: SectionEditorComponent
+}) => {
+  const dispatch = useDispatch()
+  const [tabValue, setTabValue] = useState(0)
+  const [fullIngredient, setFullIngredient] = useState<Ingredient | null>(null)
+  const [isLoadingIngredient, setIsLoadingIngredient] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  
+  // Get selected ingredient from shared model
+  const selectedIngredient = useSelector(selectSelectedIngredient)
+  const isEditingSection = useSelector(selectIsEditingSection)
+  const selectedIngredientId = selectedIngredient?.id || selectedIngredient?.keyname
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue)
+    const section = sections[newValue]
+    if (section) {
+      onSectionChange?.(section.id)
     }
-    dispatch(addSection(newSection))
-    dispatch(setActiveSection(newSection.id))
   }
-
-  const handleUpdateSection = useCallback((section: Section) => {
-    dispatch(updateSection(section))
-  }, [dispatch])
-
-  const handleDeleteSection = useCallback((id: number) => {
-    dispatch(deleteSection(id))
-  }, [dispatch])
-
-  const handleSetActive = useCallback((id: number) => {
-    dispatch(setActiveSection(id))
-  }, [dispatch])
-
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return
-
-    const { source, destination } = result
-    if (source.index !== destination.index) {
-      dispatch(reorderSections({
-        sourceIndex: source.index,
-        destinationIndex: destination.index
-      }))
+  
+  // Load full ingredient data when selection changes
+  useEffect(() => {
+    const loadFullIngredient = async () => {
+      if (!selectedIngredient) {
+        setFullIngredient(null)
+        return
+      }
+      
+      setIsLoadingIngredient(true)
+      setLoadError(null)
+      
+      // First, use the ingredient as-is since it already has the data
+      // Convert notes to sections if needed
+      const ingWithSections = {
+        ...selectedIngredient,
+        sections: selectedIngredient.sections || (selectedIngredient.notes && selectedIngredient.notes.length > 0 ? 
+          selectedIngredient.notes.map((note: string, index: number) => ({
+            id: `note-${index}`,
+            name: '',
+            type: 'static' as const,
+            content: note
+          })) : [])
+      } as Ingredient
+      
+      setFullIngredient(ingWithSections)
+      
+      // Then try to load from Firebase to get any additional data (but don't fail if not found)
+      try {
+        const result = await ingredientService.getById(
+          selectedIngredient.keyname || selectedIngredient.id
+        )
+        
+        if (result.data) {
+          // If we got data from Firebase, use it (it might have more recent sections)
+          setFullIngredient(result.data)
+        }
+      } catch (error) {
+        // Silently ignore - we already have the ingredient data
+        console.log('Could not load from Firebase, using selected ingredient data')
+      } finally {
+        setIsLoadingIngredient(false)
+      }
+    }
+    
+    loadFullIngredient()
+  }, [selectedIngredientId]) // Only re-run when the ingredient ID changes
+  
+  const handleSaveSections = (sections: any[]) => {
+    // Refresh the ingredient data after saving
+    if (selectedIngredient) {
+      const loadFullIngredient = async () => {
+        const result = await ingredientService.getById(
+          selectedIngredient.keyname || selectedIngredient.id
+        )
+        if (result.data) {
+          setFullIngredient(result.data)
+        }
+      }
+      loadFullIngredient()
+    }
+  }
+  
+  // Show section editor if an ingredient is selected
+  if (isEditingSection && selectedIngredient) {
+    if (isLoadingIngredient) {
+      return (
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100%' 
+        }}>
+          <CircularProgress />
+        </Box>
+      )
+    }
+    
+    if (loadError) {
+      return (
+        <Box sx={{ p: 3 }}>
+          <Alert severity="error">{loadError}</Alert>
+        </Box>
+      )
+    }
+    
+    if (fullIngredient && SectionEditorComponent) {
+      console.log('Passing to SectionEditor:', fullIngredient.keyname, 'sections:', fullIngredient.sections)
+      return (
+        <SectionEditorComponent
+          ingredient={fullIngredient}
+          onSave={handleSaveSections}
+          onCancel={() => {
+            // We can't really cancel from here, but we could clear the selection
+            // For now, just keep editing
+          }}
+        />
+      )
     }
   }
 
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 2 }}>
-      {/* Header */}
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="h5" gutterBottom>
-          Document Editor
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Add sections and build your dynamic document
-        </Typography>
-      </Box>
-
-      {/* Sections List */}
-      <Box sx={{ flex: 1, overflow: 'auto', pb: 8 }}>
-        {sections.length === 0 ? (
-          <Paper
-            sx={{
-              p: 4,
-              textAlign: 'center',
-              bgcolor: 'background.default',
-              border: '2px dashed',
-              borderColor: 'divider'
-            }}
-          >
-            <Typography variant="h6" color="text.secondary" gutterBottom>
-              No sections yet
-            </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              Click the + button to add your first section
-            </Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleAddSection}
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      height: '100%',
+      position: 'relative'
+    }}>
+      {sections.length > 0 ? (
+        <>
+          <Paper sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs 
+              value={tabValue} 
+              onChange={handleTabChange}
+              variant="scrollable"
+              scrollButtons="auto"
             >
-              Add First Section
-            </Button>
+              {sections.map((section) => (
+                <Tab 
+                  key={section.id} 
+                  label={section.title || `Section ${section.order + 1}`}
+                />
+              ))}
+            </Tabs>
           </Paper>
-        ) : (
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId="sections">
-              {(provided) => (
-                <Box
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                >
-                  {sections.map((section: Section, index: number) => (
-                    <Draggable
-                      key={section.id}
-                      draggableId={String(section.id)}
-                      index={index}
-                    >
-                      {(provided, snapshot) => (
-                        <Box
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          style={{
-                            ...provided.draggableProps.style,
-                            opacity: snapshot.isDragging ? 0.5 : 1
-                          }}
-                        >
-                          <SectionEditor
-                            section={section}
-                            isActive={section.id === activeSectionId}
-                            onUpdate={handleUpdateSection}
-                            onDelete={() => handleDeleteSection(section.id)}
-                            onActivate={() => handleSetActive(section.id)}
-                            dragHandleProps={provided.dragHandleProps}
-                          />
-                        </Box>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
+          
+          <Box sx={{ flexGrow: 1, p: 3, overflow: 'auto' }}>
+            {sections[tabValue] && (
+              <Paper elevation={2} sx={{ p: 3, minHeight: 400 }}>
+                <Typography variant="h6" gutterBottom>
+                  {sections[tabValue].title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  Type: {sections[tabValue].type}
+                </Typography>
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="body1" sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
+                    {sections[tabValue].content || 'No content yet'}
+                  </Typography>
                 </Box>
-              )}
-            </Droppable>
-          </DragDropContext>
-        )}
-      </Box>
-
-      {/* Floating Action Button */}
-      <Zoom in={sections.length > 0}>
+              </Paper>
+            )}
+          </Box>
+        </>
+      ) : (
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          alignItems: 'center', 
+          justifyContent: 'center',
+          height: '100%',
+          p: 3
+        }}>
+          <Typography variant="h5" color="text.secondary" gutterBottom>
+            {selectedIngredient ? 'Loading ingredient sections...' : 'Select an ingredient to edit'}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            {selectedIngredient ? 'Please wait while we load the sections' : 'Choose an ingredient from the sidebar to view and edit its sections'}
+          </Typography>
+        </Box>
+      )}
+      
+      {!isEditingSection && (
         <Fab
           color="primary"
           aria-label="add section"
-          onClick={handleAddSection}
+          onClick={onAddSection}
           sx={{
             position: 'absolute',
             bottom: 16,
-            right: 16
+            right: 16,
           }}
         >
           <AddIcon />
         </Fab>
-      </Zoom>
+      )}
     </Box>
   )
 }

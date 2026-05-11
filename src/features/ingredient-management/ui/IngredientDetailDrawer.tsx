@@ -357,22 +357,42 @@ export const IngredientDetailDrawer: React.FC<IngredientDetailDrawerProps> = ({
               METADATA
             </Typography>
             <Stack spacing={1}>
-              <Box display="flex" justifyContent="space-between">
-                <Typography variant="body2" color="text.secondary">
-                  Created
-                </Typography>
-                <Typography variant="body2">
-                  {formatDistanceToNow(new Date(ingredient.createdAt), { addSuffix: true })}
-                </Typography>
-              </Box>
-              <Box display="flex" justifyContent="space-between">
-                <Typography variant="body2" color="text.secondary">
-                  Updated
-                </Typography>
-                <Typography variant="body2">
-                  {formatDistanceToNow(new Date(ingredient.updatedAt), { addSuffix: true })}
-                </Typography>
-              </Box>
+              {ingredient.createdAt && (
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="body2" color="text.secondary">
+                    Created
+                  </Typography>
+                  <Typography variant="body2">
+                    {(() => {
+                      try {
+                        const date = new Date(ingredient.createdAt)
+                        if (isNaN(date.getTime())) return 'N/A'
+                        return formatDistanceToNow(date, { addSuffix: true })
+                      } catch {
+                        return 'N/A'
+                      }
+                    })()}
+                  </Typography>
+                </Box>
+              )}
+              {ingredient.updatedAt && (
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="body2" color="text.secondary">
+                    Updated
+                  </Typography>
+                  <Typography variant="body2">
+                    {(() => {
+                      try {
+                        const date = new Date(ingredient.updatedAt)
+                        if (isNaN(date.getTime())) return 'N/A'
+                        return formatDistanceToNow(date, { addSuffix: true })
+                      } catch {
+                        return 'N/A'
+                      }
+                    })()}
+                  </Typography>
+                </Box>
+              )}
               {ingredient.version && (
                 <Box display="flex" justifyContent="space-between">
                   <Typography variant="body2" color="text.secondary">

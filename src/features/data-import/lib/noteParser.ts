@@ -13,122 +13,84 @@ export interface NoteItem {
 /**
  * Parse NOTE array into sections
  * Detects [f( and )] delimiters to create dynamic sections
+ * Handles delimiters that can span across multiple NOTE array elements
  */
 export function parseNoteArrayToSections(noteArray: NoteItem[]): Section[] {
   if (!noteArray || !Array.isArray(noteArray)) {
     return []
   }
 
+  // First, join all TEXT elements into a single string to handle multi-element delimiters
+  const fullText = noteArray.map(note => note.TEXT || '').join('\n')
+  
   const sections: Section[] = []
-  let currentSection: Section | null = null
-  let inDynamicSection = false
-  let dynamicContent: string[] = []
-  let staticContent: string[] = []
-
-  for (let i = 0; i < noteArray.length; i++) {
-    const note = noteArray[i]
-    const text = note.TEXT || ''
-
-    // Check for dynamic section start
-    if (text === '[f(' || text.includes('[f(')) {
-      // Save any accumulated static content
-      if (staticContent.length > 0) {
+  let currentPos = 0
+  
+  while (currentPos < fullText.length) {
+    // Look for the start of a dynamic section
+    const dynamicStart = fullText.indexOf('[f(', currentPos)
+    
+    if (dynamicStart === -1) {
+      // No more dynamic sections, rest is static
+      const remainingText = fullText.substring(currentPos).trim()
+      if (remainingText) {
         sections.push({
           id: `section-${sections.length}`,
           name: `Section ${sections.length + 1}`,
           type: 'static',
-          content: staticContent.join('\n'),
+          content: remainingText,
           order: sections.length
         })
-        staticContent = []
       }
-
-      inDynamicSection = true
-      
-      // Handle case where [f( is part of a larger string
-      if (text !== '[f(') {
-        const parts = text.split('[f(')
-        if (parts[0]) {
-          sections.push({
-            id: `section-${sections.length}`,
-            name: `Section ${sections.length + 1}`,
-            type: 'static',
-            content: parts[0],
-            order: sections.length
-          })
-        }
-        if (parts[1]) {
-          dynamicContent.push(parts[1])
-        }
+      break
+    }
+    
+    // Add any static content before the dynamic section
+    if (dynamicStart > currentPos) {
+      const staticText = fullText.substring(currentPos, dynamicStart).trim()
+      if (staticText) {
+        sections.push({
+          id: `section-${sections.length}`,
+          name: `Section ${sections.length + 1}`,
+          type: 'static',
+          content: staticText,
+          order: sections.length
+        })
       }
-      continue
     }
-
-    // Check for dynamic section end
-    if (text === ')]' || text.includes(')]')) {
-      if (inDynamicSection) {
-        // Handle case where )] is part of a larger string
-        if (text !== ')]') {
-          const parts = text.split(')]')
-          if (parts[0]) {
-            dynamicContent.push(parts[0])
-          }
-        }
-
-        // Create dynamic section
-        if (dynamicContent.length > 0) {
-          sections.push({
-            id: `section-${sections.length}`,
-            name: `Dynamic Section ${sections.length + 1}`,
-            type: 'dynamic',
-            content: dynamicContent.join('\n'),
-            order: sections.length
-          })
-          dynamicContent = []
-        }
-
-        inDynamicSection = false
-
-        // Handle remaining text after )]
-        if (text !== ')]') {
-          const parts = text.split(')]')
-          if (parts[1]) {
-            staticContent.push(parts[1])
-          }
-        }
-      } else {
-        staticContent.push(text)
+    
+    // Find the end of the dynamic section
+    const dynamicEnd = fullText.indexOf(')]', dynamicStart)
+    
+    if (dynamicEnd === -1) {
+      // Dynamic section doesn't close properly, treat rest as dynamic
+      const dynamicText = fullText.substring(dynamicStart + 3).trim()
+      if (dynamicText) {
+        sections.push({
+          id: `section-${sections.length}`,
+          name: `Dynamic Section ${sections.length + 1}`,
+          type: 'dynamic',
+          content: dynamicText,
+          order: sections.length
+        })
       }
-      continue
+      break
     }
-
-    // Regular text
-    if (inDynamicSection) {
-      dynamicContent.push(text)
-    } else {
-      staticContent.push(text)
+    
+    // Extract dynamic content (between [f( and )])
+    const dynamicContent = fullText.substring(dynamicStart + 3, dynamicEnd).trim()
+    if (dynamicContent) {
+      sections.push({
+        id: `section-${sections.length}`,
+        name: `Dynamic Section ${sections.length + 1}`,
+        type: 'dynamic',
+        content: dynamicContent,
+        order: sections.length
+      })
     }
-  }
-
-  // Handle any remaining content
-  if (dynamicContent.length > 0) {
-    sections.push({
-      id: `section-${sections.length}`,
-      name: `Dynamic Section ${sections.length + 1}`,
-      type: 'dynamic',
-      content: dynamicContent.join('\n'),
-      order: sections.length
-    })
-  }
-
-  if (staticContent.length > 0) {
-    sections.push({
-      id: `section-${sections.length}`,
-      name: `Section ${sections.length + 1}`,
-      type: 'static',
-      content: staticContent.join('\n'),
-      order: sections.length
-    })
+    
+    // Move position past the end delimiter
+    currentPos = dynamicEnd + 2
   }
 
   return sections

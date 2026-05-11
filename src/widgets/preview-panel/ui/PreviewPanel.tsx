@@ -3,7 +3,7 @@
  * Real-time preview of document output
  */
 
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useCallback } from 'react'
 import {
   Box,
   Typography,
@@ -17,8 +17,8 @@ import {
 import CloseIcon from '@mui/icons-material/Close'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import { useAppSelector } from '@/app/hooks'
-import { selectSections } from '@/features/editor/model/editorSlice'
+import { useSelector } from 'react-redux'
+import { selectSelectedIngredient } from '@/shared/model/selectedIngredientModel'
 import { SecureCodeExecutor } from '@/shared/lib/code-executor'
 
 interface PreviewPanelProps {
@@ -35,17 +35,36 @@ interface SectionOutput {
 }
 
 export const PreviewPanel: React.FC<PreviewPanelProps> = ({ onToggle }) => {
-  const sections = useAppSelector(selectSections)
+  // Get selected ingredient from shared model
+  const selectedIngredient = useSelector(selectSelectedIngredient)
+  
+  // Convert notes to sections if needed
+  const sections = useMemo(() => {
+    if (selectedIngredient?.sections && selectedIngredient.sections.length > 0) {
+      return selectedIngredient.sections
+    } else if (selectedIngredient?.notes && selectedIngredient.notes.length > 0) {
+      // Convert notes to sections
+      return selectedIngredient.notes.map((note: string, index: number) => ({
+        id: `note-${index}`,
+        name: '',
+        type: 'static' as const,
+        content: note
+      }))
+    }
+    return []
+  }, [selectedIngredient])
+  
   const [outputs, setOutputs] = useState<SectionOutput[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
   const [copySuccess, setCopySuccess] = useState(false)
   const executor = useMemo(() => new SecureCodeExecutor(), [])
 
-  React.useEffect(() => {
-    processAllSections()
-  }, [sections])
-
-  const processAllSections = async () => {
+  const processAllSections = useCallback(async () => {
+    if (sections.length === 0) {
+      setOutputs([])
+      return
+    }
+    
     setIsProcessing(true)
     const newOutputs: SectionOutput[] = []
     
@@ -63,8 +82,8 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({ onToggle }) => {
 
     for (const section of sections) {
       const output: SectionOutput = {
-        id: section.id,
-        name: section.name,
+        id: section.id || Math.random(),
+        name: section.name || `Section ${sections.indexOf(section) + 1}`,
         content: '',
         isLoading: true
       }
@@ -105,7 +124,11 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({ onToggle }) => {
 
     setOutputs(newOutputs)
     setIsProcessing(false)
-  }
+  }, [sections, executor])
+  
+  React.useEffect(() => {
+    processAllSections()
+  }, [processAllSections])
 
   const handleRefresh = () => {
     processAllSections()
@@ -164,7 +187,9 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({ onToggle }) => {
         {!isProcessing && sections.length === 0 && (
           <Paper sx={{ p: 3, textAlign: 'center', bgcolor: 'background.default' }}>
             <Typography variant="body2" color="text.secondary">
-              No sections to preview. Add sections in the editor to see output here.
+              {selectedIngredient 
+                ? 'This ingredient has no sections defined yet.'
+                : 'No sections to preview. Select an ingredient to see its content.'}
             </Typography>
           </Paper>
         )}

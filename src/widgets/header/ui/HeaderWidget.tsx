@@ -8,11 +8,13 @@ import { AppBar, Toolbar, Typography, Box, IconButton, Button } from '@mui/mater
 import MenuIcon from '@mui/icons-material/Menu'
 import UploadFileIcon from '@mui/icons-material/UploadFile'
 import DownloadIcon from '@mui/icons-material/Download'
+import InventoryIcon from '@mui/icons-material/Inventory'
+import { useRouter } from 'next/navigation'
 import { ThemeToggle } from '@/features/theme-toggle'
 import { useAppSelector, useAppDispatch } from '@/app/hooks'
 import { UserModel } from '@/entities/user'
 import type { User } from '@/entities/user'
-import { ImportModal } from '@/widgets/import-modal'
+import { ImportModalEnhanced } from '@/widgets/import-modal'
 import { ExportModal } from '@/widgets/export-modal'
 import { setConfiguration } from '@/features/data-import'
 import type { TPNConfiguration, PopulationType } from '@/features/data-import/types/schemas'
@@ -29,6 +31,7 @@ export const HeaderWidget: React.FC<HeaderWidgetProps> = ({
   title = 'Dynamic Text Editor' 
 }) => {
   const dispatch = useAppDispatch()
+  const router = useRouter()
   const [importModalOpen, setImportModalOpen] = useState(false)
   const [exportModalOpen, setExportModalOpen] = useState(false)
   
@@ -89,6 +92,10 @@ export const HeaderWidget: React.FC<HeaderWidgetProps> = ({
   const handleExportClose = () => {
     setExportModalOpen(false)
   }
+  
+  const handleManageIngredientsClick = () => {
+    router.push('/ingredients/manage')
+  }
 
   return (
     <>
@@ -111,6 +118,13 @@ export const HeaderWidget: React.FC<HeaderWidgetProps> = ({
         </Typography>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Button
+            color="inherit"
+            startIcon={<InventoryIcon />}
+            onClick={handleManageIngredientsClick}
+          >
+            Manage
+          </Button>
           <Button
             color="inherit"
             startIcon={<UploadFileIcon />}
@@ -136,10 +150,9 @@ export const HeaderWidget: React.FC<HeaderWidgetProps> = ({
       </Toolbar>
     </AppBar>
     
-    <ImportModal
+    <ImportModalEnhanced
       open={importModalOpen}
       onClose={handleImportClose}
-      onImport={handleImportConfig}
     />
     
     <ExportModal

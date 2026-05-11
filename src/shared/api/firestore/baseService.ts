@@ -67,17 +67,65 @@ export class FirestoreService<T extends DocumentData> {
     this.collectionRef = collection(db, collectionName)
   }
 
+  // Helper to remove undefined values from object
+  private cleanUndefinedValues(obj: any): any {
+    if (obj === null || obj === undefined) {
+      return null
+    }
+    
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.cleanUndefinedValues(item))
+    }
+    
+    if (typeof obj === 'object' && obj !== null) {
+      const cleaned: any = {}
+      for (const [key, value] of Object.entries(obj)) {
+        if (value !== undefined) {
+          cleaned[key] = this.cleanUndefinedValues(value)
+        }
+      }
+      return cleaned
+    }
+    
+    return obj
+  }
+
   // Create a new document
   async create(data: Omit<T, 'id'>): Promise<ServiceResult<T>> {
     try {
-      const docData = {
+      const docData = this.cleanUndefinedValues({
         ...data,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
-      }
+      })
       
       const docRef = await retryWithBackoff(() => 
         addDoc(this.collectionRef, docData)
+      )
+      
+      const newDoc = await getDoc(docRef)
+      return {
+        data: { id: docRef.id, ...newDoc.data() } as T
+      }
+    } catch (error) {
+      return {
+        error: this.handleError(error)
+      }
+    }
+  }
+
+  // Create a new document with specific ID
+  async createWithId(id: string, data: Omit<T, 'id'>): Promise<ServiceResult<T>> {
+    try {
+      const docData = this.cleanUndefinedValues({
+        ...data,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      })
+      
+      const docRef = doc(this.collectionRef, id)
+      await retryWithBackoff(() => 
+        setDoc(docRef, docData)
       )
       
       const newDoc = await getDoc(docRef)
@@ -139,10 +187,10 @@ export class FirestoreService<T extends DocumentData> {
   async update(id: string, data: Partial<T>): Promise<ServiceResult<T>> {
     try {
       const docRef = doc(this.collectionRef, id)
-      const updateData = {
+      const updateData = this.cleanUndefinedValues({
         ...data,
         updatedAt: serverTimestamp()
-      }
+      })
       
       await retryWithBackoff(() => updateDoc(docRef, updateData))
       

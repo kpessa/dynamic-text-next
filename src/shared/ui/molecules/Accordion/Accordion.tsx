@@ -180,18 +180,41 @@ export const AccordionWithBadges: React.FC<
   AccordionProps & {
     badges?: { [key: string]: string | number }
   }
-> = ({ items, badges = {}, ...props }) => {
-  const enhancedItems = items.map((item) => ({
-    ...item,
-    title: (
-      <Box display="flex" alignItems="center" gap={1}>
-        <span>{item.title}</span>
-        {badges[item.id] && (
-          <Chip label={badges[item.id]} size="small" color="primary" />
-        )}
-      </Box>
-    ),
-  }))
+> = ({ items, badges = {}, expanded, onChange, variant, showIcon = true, ...props }) => {
+  const isExpanded = (id: string): boolean => {
+    if (expanded === false) return false
+    if (typeof expanded === 'string') return expanded === id
+    return Array.isArray(expanded) && expanded.includes(id)
+  }
 
-  return <Accordion items={enhancedItems} {...props} />
+  return (
+    <div {...props}>
+      {items.map((item) => (
+        <StyledAccordion
+          key={item.id}
+          expanded={isExpanded(item.id)}
+          onChange={(event, isExpanded) => onChange?.(item.id, isExpanded)}
+          disabled={item.disabled}
+          variant={variant}
+        >
+          <AccordionSummary
+            expandIcon={showIcon ? <ExpandMoreIcon /> : null}
+            aria-controls={`${item.id}-content`}
+            id={`${item.id}-header`}
+          >
+            <Box display="flex" alignItems="center" gap={2} width="100%">
+              {item.icon && <Box display="flex">{item.icon}</Box>}
+              <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <span>{item.title}</span>
+                {badges[item.id] && (
+                  <Chip label={badges[item.id]} size="small" color="primary" variant="outlined" />
+                )}
+              </Box>
+            </Box>
+          </AccordionSummary>
+          <AccordionDetails>{item.content}</AccordionDetails>
+        </StyledAccordion>
+      ))}
+    </div>
+  )
 }

@@ -8,62 +8,42 @@ import {
   Grid,
   Typography,
   IconButton,
-  Tooltip,
   Button,
-  Badge,
   Chip,
   Stack,
   Drawer,
-  Divider,
-  ToggleButton,
-  ToggleButtonGroup,
   useTheme,
   useMediaQuery,
   Fab,
-  Alert,
   Snackbar
 } from '@mui/material'
 import {
-  ViewList as ListIcon,
-  ViewModule as GridIcon,
   Add as AddIcon,
   Upload as ImportIcon,
   Download as ExportIcon,
-  FilterList as FilterIcon,
-  Search as SearchIcon,
-  Delete as DeleteIcon,
-  Edit as EditIcon,
-  ContentCopy as DuplicateIcon,
   Warning as WarningIcon,
-  CheckCircle as CheckIcon,
   Refresh as RefreshIcon,
-  Settings as SettingsIcon,
   Close as CloseIcon
 } from '@mui/icons-material'
 import { useBreadcrumbs } from '@/features/ui/hooks/useBreadcrumbs'
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
 import {
-  selectIngredients,
-  selectLoadedIngredients,
-  selectSelectedIngredients,
-  selectIngredientLoading,
-  selectIngredientError,
-  setIngredients,
-  deleteIngredient,
-  setSelectedIngredients,
-  clearSelectedIngredients
-} from '@/entities/ingredient/model/ingredientSlice'
-import { IngredientList } from '@/features/ingredient-management/ui/IngredientList'
-import { IngredientGrid } from '@/features/ingredient-management/ui/IngredientGrid'
+  selectIngredientsByType,
+  selectLoading,
+  selectError,
+  setIngredientsByType,
+  updateIngredient,
+  selectSelectedIngredientId,
+  selectIngredient,
+  setLoading,
+  setError
+} from '@/features/ingredient-management/store/variantSlice'
+import { variantService } from '@/features/ingredient-management/lib/variantService'
 import { IngredientDetailDrawer } from '@/features/ingredient-management/ui/IngredientDetailDrawer'
-import { IngredientFilterPanel } from '@/features/ingredient-management/ui/IngredientFilterPanel'
-import { IngredientBulkActions } from '@/features/ingredient-management/ui/IngredientBulkActions'
-import { IngredientSearchBar } from '@/features/ingredient-management/ui/IngredientSearchBar'
-import { IngredientImportDialog } from '@/features/ingredient-management/ui/IngredientImportDialog'
 import { IngredientExportDialog } from '@/features/ingredient-management/ui/IngredientExportDialog'
+import { ImportModalEnhanced } from '@/widgets/import-modal/ui/ImportModalEnhanced'
+import { IngredientCardGrid } from '@/features/ingredient-management/ui/IngredientCardGrid'
 import type { Ingredient } from '@/entities/ingredient/types'
-
-type ViewMode = 'list' | 'grid'
 
 export default function IngredientManagementPage() {
   const theme = useTheme()
@@ -71,18 +51,21 @@ export default function IngredientManagementPage() {
   const dispatch = useAppDispatch()
   
   // Redux state
-  const ingredients = useAppSelector(selectIngredients)
-  const selectedIngredients = useAppSelector(selectSelectedIngredients)
-  const isLoading = useAppSelector(selectIngredientLoading)
-  const error = useAppSelector(selectIngredientError)
+  const ingredientsByType = useAppSelector(selectIngredientsByType)
+  const selectedIngredientId = useAppSelector(selectSelectedIngredientId)
+  const isLoading = useAppSelector(selectLoading)
+  const error = useAppSelector(selectError)
+  
+  // Flatten ingredients from all types for display
+  const ingredients = useMemo(() => {
+    return Object.values(ingredientsByType).flat()
+  }, [ingredientsByType])
+  
+  const selectedIngredients: string[] = selectedIngredientId ? [selectedIngredientId] : []
   
   // Local state
-  const [viewMode, setViewMode] = useState<ViewMode>('list')
-  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
   const [detailDrawerOpen, setDetailDrawerOpen] = useState(false)
   const [selectedIngredient, setSelectedIngredient] = useState<Ingredient | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [activeFilters, setActiveFilters] = useState<Record<string, any>>({})
   const [importDialogOpen, setImportDialogOpen] = useState(false)
   const [exportDialogOpen, setExportDialogOpen] = useState(false)
   const [snackbarMessage, setSnackbarMessage] = useState('')
@@ -95,70 +78,29 @@ export default function IngredientManagementPage() {
     { label: 'Manage', href: '/ingredients/manage' }
   ])
 
-  // Load ingredients on mount
+  // Load ingredients from Firebase on mount
   useEffect(() => {
-    // In real app, this would fetch from Firebase
-    loadMockIngredients()
+    loadIngredientsFromFirebase()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const loadMockIngredients = () => {
-    // Mock data for development
-    const mockIngredients: Ingredient[] = [
-      {
-        id: '1',
-        keyname: 'calcium_gluconate',
-        displayName: 'Calcium Gluconate 10%',
-        category: 'electrolyte',
-        unit: 'mEq',
-        isShared: false,
-        referenceRanges: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      },
-      {
-        id: '2',
-        keyname: 'magnesium_sulfate',
-        displayName: 'Magnesium Sulfate',
-        category: 'electrolyte',
-        unit: 'mEq',
-        isShared: true,
-        referenceRanges: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      },
-      // Add more mock ingredients...
-    ]
-    dispatch(setIngredients(mockIngredients))
+  const loadIngredientsFromFirebase = async () => {
+    dispatch(setLoading(true))
+    dispatch(setError(null))
+    
+    try {
+      const ingredientsWithVariants = await variantService.fetchIngredientsWithVariants()
+      dispatch(setIngredientsByType(ingredientsWithVariants))
+      setSnackbarMessage(`Loaded ${Object.values(ingredientsWithVariants).flat().length} ingredients`)
+    } catch (err) {
+      console.error('Failed to load ingredients:', err)
+      dispatch(setError(err instanceof Error ? err.message : 'Failed to load ingredients'))
+      setSnackbarMessage('Failed to load ingredients')
+    } finally {
+      dispatch(setLoading(false))
+    }
   }
 
-  // Filter ingredients based on search and filters
-  const filteredIngredients = useMemo(() => {
-    let filtered = [...ingredients]
-    
-    // Apply search
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
-      filtered = filtered.filter(ing => 
-        ing.displayName.toLowerCase().includes(query) ||
-        ing.keyname.toLowerCase().includes(query) ||
-        ing.category?.toLowerCase().includes(query)
-      )
-    }
-    
-    // Apply category filter
-    if (activeFilters.categories?.length > 0) {
-      filtered = filtered.filter(ing => 
-        activeFilters.categories.includes(ing.category)
-      )
-    }
-    
-    // Apply shared filter
-    if (activeFilters.showSharedOnly) {
-      filtered = filtered.filter(ing => ing.isShared)
-    }
-    
-    return filtered
-  }, [ingredients, searchQuery, activeFilters])
 
   // Detect duplicates
   useEffect(() => {
@@ -181,38 +123,33 @@ export default function IngredientManagementPage() {
     setDuplicates(duplicateIds)
   }, [ingredients])
 
-  const handleViewModeChange = (event: React.MouseEvent<HTMLElement>, newMode: ViewMode | null) => {
-    if (newMode !== null) {
-      setViewMode(newMode)
-    }
-  }
-
   const handleIngredientClick = (ingredient: Ingredient) => {
     setSelectedIngredient(ingredient)
     setDetailDrawerOpen(true)
   }
 
   const handleIngredientSelect = (id: string, selected: boolean) => {
-    const currentSelected = [...selectedIngredients]
-    if (selected && !currentSelected.includes(id)) {
-      dispatch(setSelectedIngredients([...currentSelected, id]))
-    } else if (!selected) {
-      dispatch(setSelectedIngredients(currentSelected.filter(sid => sid !== id)))
+    // For now, only support single selection in variant system
+    if (selected) {
+      dispatch(selectIngredient(id))
+    } else {
+      dispatch(selectIngredient(null))
     }
   }
 
   const handleSelectAll = (selected: boolean) => {
-    if (selected) {
-      dispatch(setSelectedIngredients(filteredIngredients.map(ing => ing.id)))
+    // For now, only support single selection in variant system
+    if (selected && filteredIngredients.length > 0) {
+      dispatch(selectIngredient(filteredIngredients[0].id))
     } else {
-      dispatch(clearSelectedIngredients())
+      dispatch(selectIngredient(null))
     }
   }
 
   const handleDelete = (ids: string[]) => {
-    ids.forEach(id => dispatch(deleteIngredient(id)))
-    setSnackbarMessage(`Deleted ${ids.length} ingredient${ids.length > 1 ? 's' : ''}`)
-    dispatch(clearSelectedIngredients())
+    // TODO: Implement delete for variant-based system
+    setSnackbarMessage(`Delete not yet implemented for variant system`)
+    dispatch(selectIngredient(null))
   }
 
   const handleExport = () => {
@@ -224,8 +161,7 @@ export default function IngredientManagementPage() {
   }
 
   const handleRefresh = () => {
-    loadMockIngredients()
-    setSnackbarMessage('Ingredients refreshed')
+    loadIngredientsFromFirebase()
   }
 
   const getStatistics = () => {
@@ -301,171 +237,18 @@ export default function IngredientManagementPage() {
         </Grid>
       </Paper>
 
-      {/* Search and Filter Bar */}
-      <Paper elevation={1} sx={{ p: 2, mb: 3 }}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={6}>
-            <IngredientSearchBar
-              value={searchQuery}
-              onChange={setSearchQuery}
-              placeholder="Search ingredients by name, key, or category..."
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Stack direction="row" spacing={1} justifyContent="flex-end">
-              <ToggleButtonGroup
-                value={viewMode}
-                exclusive
-                onChange={handleViewModeChange}
-                size="small"
-              >
-                <ToggleButton value="list">
-                  <Tooltip title="List View">
-                    <ListIcon />
-                  </Tooltip>
-                </ToggleButton>
-                <ToggleButton value="grid">
-                  <Tooltip title="Grid View">
-                    <GridIcon />
-                  </Tooltip>
-                </ToggleButton>
-              </ToggleButtonGroup>
-              <Button
-                variant="outlined"
-                startIcon={<FilterIcon />}
-                onClick={() => setFilterDrawerOpen(true)}
-                sx={{ ml: 1 }}
-              >
-                Filters
-                {Object.keys(activeFilters).length > 0 && (
-                  <Badge
-                    badgeContent={Object.keys(activeFilters).length}
-                    color="primary"
-                    sx={{ ml: 1 }}
-                  />
-                )}
-              </Button>
-            </Stack>
-          </Grid>
-        </Grid>
-      </Paper>
-
-      {/* Bulk Actions Toolbar */}
-      {selectedIngredients.length > 0 && (
-        <IngredientBulkActions
-          selectedCount={selectedIngredients.length}
-          onDelete={() => handleDelete(selectedIngredients)}
-          onExport={handleExport}
-          onClearSelection={() => dispatch(clearSelectedIngredients())}
-        />
-      )}
 
       {/* Main Content Area */}
-      <Grid container spacing={3}>
-        {/* Category Sidebar (Desktop only) */}
-        {!isMobile && (
-          <Grid item md={2}>
-            <Paper elevation={1} sx={{ p: 2, position: 'sticky', top: 80 }}>
-              <Typography variant="h6" gutterBottom>
-                Categories
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              {/* Category filter list would go here */}
-              <Stack spacing={1}>
-                <Button 
-                  size="small" 
-                  fullWidth 
-                  sx={{ justifyContent: 'flex-start' }}
-                >
-                  All Categories
-                </Button>
-                <Button 
-                  size="small" 
-                  fullWidth 
-                  sx={{ justifyContent: 'flex-start' }}
-                >
-                  Electrolytes
-                </Button>
-                <Button 
-                  size="small" 
-                  fullWidth 
-                  sx={{ justifyContent: 'flex-start' }}
-                >
-                  Macronutrients
-                </Button>
-                <Button 
-                  size="small" 
-                  fullWidth 
-                  sx={{ justifyContent: 'flex-start' }}
-                >
-                  Vitamins
-                </Button>
-              </Stack>
-            </Paper>
-          </Grid>
-        )}
-
-        {/* Ingredient List/Grid */}
-        <Grid item xs={12} md={isMobile ? 12 : 10}>
-          {filteredIngredients.length === 0 ? (
-            <Paper sx={{ p: 4, textAlign: 'center' }}>
-              <Typography variant="h6" color="text.secondary">
-                {searchQuery || Object.keys(activeFilters).length > 0
-                  ? 'No ingredients match your filters'
-                  : 'No ingredients found'}
-              </Typography>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                sx={{ mt: 2 }}
-                onClick={() => {/* TODO: Open add dialog */}}
-              >
-                Add Your First Ingredient
-              </Button>
-            </Paper>
-          ) : viewMode === 'list' ? (
-            <IngredientList
-              ingredients={filteredIngredients}
-              selectedIds={selectedIngredients}
-              duplicateIds={duplicates}
-              onIngredientClick={handleIngredientClick}
-              onIngredientSelect={handleIngredientSelect}
-              onSelectAll={handleSelectAll}
-              loading={isLoading}
-            />
-          ) : (
-            <IngredientGrid
-              ingredients={filteredIngredients}
-              selectedIds={selectedIngredients}
-              duplicateIds={duplicates}
-              onIngredientClick={handleIngredientClick}
-              onIngredientSelect={handleIngredientSelect}
-              loading={isLoading}
-            />
-          )}
-        </Grid>
-      </Grid>
-
-      {/* Filter Drawer */}
-      <Drawer
-        anchor="right"
-        open={filterDrawerOpen}
-        onClose={() => setFilterDrawerOpen(false)}
-      >
-        <Box sx={{ width: 350, p: 3 }}>
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-            <Typography variant="h6">Filters</Typography>
-            <IconButton onClick={() => setFilterDrawerOpen(false)}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          <IngredientFilterPanel
-            filters={activeFilters}
-            onChange={setActiveFilters}
-            onClear={() => setActiveFilters({})}
-          />
-        </Box>
-      </Drawer>
+      <Box sx={{ flex: 1 }}>
+        <IngredientCardGrid
+          onIngredientClick={handleIngredientClick}
+          onEdit={(ingredient) => {
+            setSelectedIngredient(ingredient)
+            setDetailDrawerOpen(true)
+          }}
+          onDelete={(id) => handleDelete([id])}
+        />
+      </Box>
 
       {/* Detail Drawer */}
       <IngredientDetailDrawer
@@ -485,16 +268,10 @@ export default function IngredientManagementPage() {
         }}
       />
 
-      {/* Import Dialog */}
-      <IngredientImportDialog
+      {/* Import Modal */}
+      <ImportModalEnhanced
         open={importDialogOpen}
         onClose={() => setImportDialogOpen(false)}
-        onImport={(ingredients) => {
-          // TODO: Import ingredients
-          console.log('Import ingredients:', ingredients)
-          setImportDialogOpen(false)
-          setSnackbarMessage(`Imported ${ingredients.length} ingredients`)
-        }}
       />
 
       {/* Export Dialog */}

@@ -3,7 +3,7 @@
 
 // Ingredient types matching parent project structure
 export type IngredientType = 'Macronutrient' | 'Micronutrient' | 'Additive' | 'Salt' | 'Diluent' | 'Other'
-export type IngredientCategory = 'macro' | 'micro' | 'electrolyte' | 'vitamin' | 'trace' | 'other'
+export type IngredientCategory = 'macro' | 'micro' | 'additive' | 'salt' | 'diluent' | 'other'
 export type PopulationType = 'NEO' | 'CHILD' | 'ADOLESCENT' | 'ADULT'
 export type ThresholdType = 'Feasible Low' | 'Critical Low' | 'Normal Low' | 'Normal High' | 'Critical High' | 'Feasible High'
 export type EditMode = 'None' | 'Custom'
@@ -66,6 +66,20 @@ export interface Ingredient {
     shouldGraph: boolean
   }>
   notes?: string[]
+  sections?: Array<{
+    id: string
+    name?: string
+    type: 'static' | 'dynamic'
+    content: string
+    order?: number
+    isExpanded?: boolean
+    testCases?: Array<{
+      id: string
+      variables: Record<string, any>
+      expected: string
+    }>
+    metadata?: Record<string, any>
+  }>
   createdAt: string
   updatedAt: string
   version?: string

@@ -30,6 +30,8 @@ import aiTestReducer from '@/features/ai-test-generation/model/aiTestSlice'
 import versionReducer from '@/features/version-history/model/versionSlice'
 import sharedIngredientReducer from '@/features/shared-ingredients/model/sharedIngredientSlice'
 import diffViewerReducer from '@/features/diff-viewer/model/diffSlice'
+import variantReducer from '@/features/ingredient-management/store/variantSlice'
+import selectedIngredientReducer from '@/shared/model/selectedIngredientModel'
 import { optimisticUpdatesMiddleware } from './store/middleware/optimisticUpdates'
 
 // Persist config for auth
@@ -70,6 +72,8 @@ export const store = configureStore({
     version: versionReducer,
     sharedIngredients: sharedIngredientReducer,
     diffViewer: diffViewerReducer,
+    variants: variantReducer,
+    selectedIngredient: selectedIngredientReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -42,13 +42,13 @@ function mapIngredientCategory(type: string): IngredientCategory {
   const categoryMap: Record<string, IngredientCategory> = {
     'Macronutrient': 'macro',
     'Micronutrient': 'micro',
-    'Electrolyte': 'electrolyte',
+    'Electrolyte': 'salt',
     'Mineral': 'micro',
-    'Vitamin': 'vitamin',
-    'Trace Element': 'trace',
-    'Additive': 'other',
-    'Salt': 'electrolyte',
-    'Diluent': 'other',
+    'Vitamin': 'micro',
+    'Trace Element': 'micro',
+    'Additive': 'additive',
+    'Salt': 'salt',
+    'Diluent': 'diluent',
     'Other': 'other'
   }
   return categoryMap[type] || 'other'
